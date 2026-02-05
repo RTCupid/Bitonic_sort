@@ -9,7 +9,16 @@ int main() {
     using clock = std::chrono::steady_clock;
     using duration = std::chrono::duration<double, std::milli>;
 
-    std::vector<int> data = {5, 2, 9, 1, 5, 6, 9, 3, 6, 2};
+    std::size_t count;
+    std::cin >> count;
+
+    std::vector<int> data;
+    int value;
+    for (std::size_t i = 0; i < count; ++i) {
+        while (std::cin >> value) {
+            data.push_back(value);
+        }
+    }
     
     std::cout << "data before sorting:" << std::endl;
     yLab::dump(data);
