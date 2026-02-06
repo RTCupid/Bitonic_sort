@@ -4,7 +4,6 @@
 #include <chrono>
 #include "utils.hpp"
 
-
 int main() {
     #ifdef ON_CPU_TIME
     using clock = std::chrono::steady_clock;
@@ -32,7 +31,7 @@ int main() {
     #endif
 
     std::sort(data.begin(), data.end());
-    
+
     #ifdef ON_CPU_TIME
     auto end = clock::now();
     duration dt = end - start;
