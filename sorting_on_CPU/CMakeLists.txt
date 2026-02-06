@@ -7,35 +7,29 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(ON_CPU sorting_on_CPU)
-set(ON_CPU_TIME sorting_on_CPU_time)
-
-add_library(range_queries_headers INTERFACE)
-target_include_directories(range_queries_headers
-    INTERFACE ${CMAKE_SOURCE_DIR}/include
-)
-add_library(range_queries::headers ALIAS range_queries_headers)
+set(ON_CPU sorting_on_CPU_run)
+set(ON_CPU_TIME sorting_on_CPU_time_run)
 
 set(SOURCES
-    ${CMAKE_SOURCE_DIR}/src/main.cpp
+    src/main.cpp
 )
 
-function(add_sorting_executable TARGET_NAME)
-    set(options)
-    set(oneValueArgs)
-    set(multiValueArgs DEFINITIONS)
-    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+add_library(sorting_on_CPU INTERFACE)
+target_include_directories(sorting_on_CPU
+    INTERFACE 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+    $<INSTALL_INTERFACE:include>
+)
+add_library(sorting_on_CPU::headers ALIAS sorting_on_CPU)
 
-    add_executable(${TARGET_NAME} ${ARG_UNPARSED_ARGUMENTS})
-    target_link_libraries(${TARGET_NAME} PRIVATE range_queries::headers)
+add_executable(${ON_CPU} ${SOURCES})
+target_link_libraries(${ON_CPU} PRIVATE sorting_on_CPU)
 
-    if(ARG_DEFINITIONS)
-        target_compile_definitions(${TARGET_NAME} PRIVATE ${ARG_DEFINITIONS})
-    endif()
-endfunction()
+add_executable(${ON_CPU_TIME} ${SOURCES})
+target_link_libraries(${ON_CPU_TIME} PRIVATE sorting_on_CPU)
 
-add_sorting_executable(${ON_CPU} ${SOURCES} DEFINITIONS ON_CPU_RUN)
-add_sorting_executable(${ON_CPU_TIME} ${SOURCES} DEFINITIONS ON_CPU_TIME_RUN)
+target_compile_definitions(${ON_CPU_TIME} PRIVATE ON_CPU_TIME)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_compile_options(${ON_CPU} PRIVATE -mllvm -inline-threshold=500)

@@ -6,8 +6,10 @@
 
 
 int main() {
+    #ifdef ON_CPU_TIME
     using clock = std::chrono::steady_clock;
     using duration = std::chrono::duration<double, std::milli>;
+    #endif
 
     std::size_t count;
     std::cin >> count;
@@ -20,16 +22,28 @@ int main() {
         }
     }
     
+    #ifndef ON_CPU_TIME
     std::cout << "data before sorting:" << std::endl;
     yLab::dump(data);
+    #endif
 
+    #ifdef ON_CPU_TIME
     auto start = clock::now();
+    #endif
+
     std::sort(data.begin(), data.end());
+    
+    #ifdef ON_CPU_TIME
     auto end = clock::now();
     duration dt = end - start;
+    #endif
 
+    #ifndef ON_CPU_TIME
     std::cout << "data after sorting:" << std::endl;
     yLab::dump(data);
+    #endif
 
+    #ifdef ON_CPU_TIME
     std::cout << "Total time: " << dt.count() << " ms" << std::endl;
+    #endif
 }
