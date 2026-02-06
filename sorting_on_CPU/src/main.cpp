@@ -20,7 +20,7 @@ int main() {
 
     #ifndef ON_CPU_TIME
     std::cout << "data before sorting:" << std::endl;
-    yLab::dump(data);
+    bLab::dump(data);
     #endif
 
     #ifdef ON_CPU_TIME
@@ -36,7 +36,7 @@ int main() {
 
     #ifndef ON_CPU_TIME
     std::cout << "data after sorting:" << std::endl;
-    yLab::dump(data);
+    bLab::dump(data);
     #endif
 
     #ifdef ON_CPU_TIME

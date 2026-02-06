@@ -4,7 +4,7 @@
 #include <vector>
 #include <iostream>
 
-namespace bitonic {
+namespace bLab {
 
 class Bitonic {
 private:
@@ -26,6 +26,6 @@ public:
     }
 };
 
-} // namespace bitonic
+} // namespace bLab
 
 #endif // SORTING_ON_GPU_INCLUDE_BITONIC_HPP
