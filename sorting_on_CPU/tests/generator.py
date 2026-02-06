@@ -83,15 +83,23 @@ def generate_tests():
         return
 
     base_dir = Path(__file__).resolve().parent
+
     data_dir = base_dir / "data"
+    answ_dir = base_dir / "answ"
     data_dir.mkdir(exist_ok=True)
+    answ_dir.mkdir(exist_ok=True)
 
     for i in range(1, files_count + 1):
         nums = [random.randint(0, 10**9) for _ in range(tests_per_file)]
-        line = str(files_count) + " " + " ".join(map(str, nums)) + "\n"
-        (data_dir / f"{i}.txt").write_text(line, encoding="utf-8")
 
-    print(f"Готово: {files_count} файлов создано в {data_dir}")
+        data_line = str(files_count) + " " + " ".join(map(str, nums)) + "\n"
+        (data_dir / f"{i}.txt").write_text(data_line, encoding="utf-8")
+
+        nums_sorted = sorted(nums)
+        answ_line = " ".join(map(str, nums_sorted)) + "\n"
+        (answ_dir / f"{i}.txt").write_text(answ_line, encoding="utf-8")
+
+    print(f"Готово: создано {files_count} файлов в {data_dir} и ответы в {answ_dir}")
     close_window()
 
 
