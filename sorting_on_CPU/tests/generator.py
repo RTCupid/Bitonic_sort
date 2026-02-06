@@ -74,7 +74,25 @@ def close_window():
 def generate_tests():
     files_count = safe_int(entry_files)
     tests_per_file = safe_int(entry_tests)
-    print("files:", files_count, "\ntests per file:", tests_per_file)
+
+    if files_count <= 0:
+        print("Ошибка: количество файлов должно быть > 0")
+        return
+    if tests_per_file <= 0:
+        print("Ошибка: количество чисел в файле должно быть > 0")
+        return
+
+    base_dir = Path(__file__).resolve().parent
+    data_dir = base_dir / "data"
+    data_dir.mkdir(exist_ok=True)
+
+    for i in range(1, files_count + 1):
+        nums = [random.randint(0, 10**9) for _ in range(tests_per_file)]
+        line = str(files_count) + " " + " ".join(map(str, nums)) + "\n"
+        (data_dir / f"{i}.txt").write_text(line, encoding="utf-8")
+
+    print(f"Готово: {files_count} файлов создано в {data_dir}")
+    close_window()
 
 
 # ---------- общий контейнер ----------
@@ -113,7 +131,7 @@ card2.pack(fill="x", pady=10)
 
 card2.grid_columnconfigure(1, weight=1)
 
-ttk.Label(card2, text="Tests per file", style="Sub.TLabel").grid(row=0, column=0, columnspan=3, sticky="w", padx=16, pady=(14, 8))
+ttk.Label(card2, text="Numbers per file", style="Sub.TLabel").grid(row=0, column=0, columnspan=3, sticky="w", padx=16, pady=(14, 8))
 
 btn_tests_minus = nice_btn(card2, "−", MINUS, "#DC2626", lambda: change(entry_tests, -1))
 btn_tests_minus.grid(row=1, column=0, padx=(16, 10), pady=(0, 16), sticky="ew")

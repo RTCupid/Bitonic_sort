@@ -4,6 +4,9 @@ build_gpu/
 
 input.txt
 
+tests/data/*
+tests/answ/*
+
 # Prerequisites
 *.d
 
