@@ -1,3 +1,7 @@
+build/
+build_cpu/
+build_gpu/
+
 # Prerequisites
 *.d
 
