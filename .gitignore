@@ -7,6 +7,8 @@ input.txt
 tests/data/*
 tests/answ/*
 
+.cache/
+
 # Prerequisites
 *.d
 

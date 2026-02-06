@@ -7,12 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_executable(sorting_on_GPU
-    src/main.cpp
-)
-
-target_include_directories(sorting_on_GPU PRIVATE
-    include
+target_include_directories(sorting_gpu PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 enable_testing()

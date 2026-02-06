@@ -16,7 +16,7 @@ set(SOURCES
 
 add_library(sorting_on_CPU INTERFACE)
 target_include_directories(sorting_on_CPU
-    INTERFACE 
+    INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<INSTALL_INTERFACE:include>
