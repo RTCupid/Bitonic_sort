@@ -3,10 +3,8 @@
 
 #include <iostream>
 #include <vector>
-#include <chrono>
-#include <functional>
 
-namespace yLab {
+namespace bLab {
 
 template<typename T>
 void dump(const std::vector<T>& vec) {
@@ -16,7 +14,7 @@ void dump(const std::vector<T>& vec) {
     std::cout << std::endl;
 }
 
-} // namespace yLab
+} // namespace bLab
 
 
 #endif //INCLUDE_UTILS_HPP

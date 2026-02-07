@@ -15,15 +15,12 @@ int main() {
 
     std::vector<int> data;
     int value;
-    for (std::size_t i = 0; i < count; ++i) {
-        while (std::cin >> value) {
-            data.push_back(value);
-        }
-    }
-    
+    for (std::size_t i = 0; i < count && std::cin >> value; ++i)
+        data.push_back(value);
+
     #ifndef ON_CPU_TIME
     std::cout << "data before sorting:" << std::endl;
-    yLab::dump(data);
+    bLab::dump(data);
     #endif
 
     #ifdef ON_CPU_TIME
@@ -39,7 +36,7 @@ int main() {
 
     #ifndef ON_CPU_TIME
     std::cout << "data after sorting:" << std::endl;
-    yLab::dump(data);
+    bLab::dump(data);
     #endif
 
     #ifdef ON_CPU_TIME
