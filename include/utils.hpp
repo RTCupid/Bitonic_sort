@@ -14,7 +14,7 @@ void dump(const std::vector<T>& vec) {
     std::cout << std::endl;
 }
 
-} // namespace yLab
+} // namespace bLab
 
 
 #endif //INCLUDE_UTILS_HPP

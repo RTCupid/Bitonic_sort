@@ -9,10 +9,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(OpenCL REQUIRED)
 
-message(STATUS "OpenCL библиотеки: ${OpenCL_LIBRARIES}")
-message(STATUS "OpenCL заголовки: ${OpenCL_INCLUDE_DIRS}")
-
-
 target_link_libraries(sorting_gpu ${OpenCL_LIBRARIES})
 target_include_directories(sorting_gpu PRIVATE ${OpenCL_INCLUDE_DIRS})
 
