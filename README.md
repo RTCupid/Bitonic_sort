@@ -57,6 +57,3 @@ Program execution is performed in the following format:
   <a href="https://github.com/BulgakovDmitry"><strong>@BulgakovDmitry, </strong></a>
   <br>
 </div>
-
-## 📚 References
-1. Extended Backus-Naur Form [Electronic resource]: article. - [https://divancoder.ru/2017/06/ebnf/](https://divancoder.ru/2017/06/ebnf/) (accessed May 21, 2025)
