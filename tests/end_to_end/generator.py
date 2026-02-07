@@ -23,7 +23,7 @@ FONT_BTN = ("Segoe UI", 12, "bold")
 # ---------- окно ----------
 window = tk.Tk()
 window.title("generator")
-window.geometry("600x670")
+window.geometry("600x770")
 window.resizable(False, False)
 window.configure(bg=BG)
 
@@ -82,6 +82,12 @@ def generate_tests():
         print("Ошибка: количество чисел в файле должно быть > 0")
         return
 
+    range_from = safe_int(entry_range_from)
+    range_to = safe_int(entry_range_to)
+    if range_from > range_to:
+        print("Ошибка: Range From не может быть больше Range To")
+        return
+
     base_dir = Path(__file__).resolve().parent
 
     data_dir = base_dir / "data"
@@ -90,7 +96,7 @@ def generate_tests():
     answ_dir.mkdir(exist_ok=True)
 
     for i in range(1, files_count + 1):
-        nums = [random.randint(0, 10**9) for _ in range(tests_per_file)]
+        nums = [random.randint(range_from, range_to) for _ in range(tests_per_file)]
 
         data_line = str(tests_per_file) + " " + " ".join(map(str, nums)) + "\n"
         (data_dir / f"{i}.txt").write_text(data_line, encoding="utf-8")
@@ -131,6 +137,28 @@ btn_files_plus.grid(row=1, column=2, padx=(10, 16), pady=(0, 16), sticky="ew")
 
 btn_files_minus.configure(height=1)
 btn_files_plus.configure(height=1)
+
+# ---------- карточка: range ----------
+card3 = ttk.Frame(root, style="Card.TFrame")
+card3.pack(fill="x", pady=10)
+
+card3.grid_columnconfigure(0, weight=1)
+card3.grid_columnconfigure(2, weight=1)
+
+ttk.Label(card3, text="Range of numbers", style="Sub.TLabel").grid(
+    row=0, column=0, columnspan=3, sticky="w", padx=16, pady=(14, 8)
+)
+
+entry_range_from = ttk.Entry(card3, justify="center")
+entry_range_from.grid(row=1, column=0, padx=(16, 8), pady=(0, 16), sticky="ew")
+set_int(entry_range_from, 0)
+
+dash = ttk.Label(card3, text="—", style="Sub.TLabel")  # лаконичный разделитель
+dash.grid(row=1, column=1, padx=0, pady=(0, 16))
+
+entry_range_to = ttk.Entry(card3, justify="center")
+entry_range_to.grid(row=1, column=2, padx=(8, 16), pady=(0, 16), sticky="ew")
+set_int(entry_range_to, 10**9)
 
 
 # ---------- карточка: tests per file ----------
