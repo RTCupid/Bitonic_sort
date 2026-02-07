@@ -92,7 +92,7 @@ def generate_tests():
     for i in range(1, files_count + 1):
         nums = [random.randint(0, 10**9) for _ in range(tests_per_file)]
 
-        data_line = str(files_count) + " " + " ".join(map(str, nums)) + "\n"
+        data_line = str(tests_per_file) + " " + " ".join(map(str, nums)) + "\n"
         (data_dir / f"{i}.txt").write_text(data_line, encoding="utf-8")
 
         nums_sorted = sorted(nums)
