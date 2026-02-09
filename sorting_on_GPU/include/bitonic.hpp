@@ -17,7 +17,6 @@ class Bitonic {
     std::vector<int> data_;
 
     void merge() {}
-
     void split() {}
 
   public:
