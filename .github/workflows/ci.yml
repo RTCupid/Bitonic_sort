@@ -42,13 +42,7 @@ jobs:
       - name: Install OpenCL dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y
-            ocl-icd-opencl-dev \
-            ocl-icd-libopencl1 \
-            opencl-headers \
-            clinfo \
-            build-essential \
-            cmake
+          sudo apt-get install -ocl-icd-opencl-dev ocl-icd-libopencl1 opencl-headers clinfo build-essential cmake
 
       - name: Verify OpenCL installation
         run: |
