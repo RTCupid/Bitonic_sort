@@ -21,19 +21,21 @@ inline cl::Platform select_platform() {
     throw std::runtime_error("No platform selected");
 }
 
-inline cl::Buffer move_buffer_to_gpu(cl::Context &context, cl::CommandQueue &queue, cl::vector<int> &buffer,
-                               cl::Platform &platform) {
+inline cl::Buffer move_buffer_to_gpu(cl::Context &context,
+                                     cl::CommandQueue &queue,
+                                     cl::vector<int> &buffer,
+                                     cl::Platform &platform) {
     cl_context_properties properties[] = {
         CL_CONTEXT_PLATFORM,
         reinterpret_cast<cl_context_properties>(platform()),
         0 // signals end of property list
     };
 
-    cl::Buffer buffer_on_gpu(context, CL_MEM_READ_WRITE, buffer.size() * sizeof(int));
+    cl::Buffer buffer_on_gpu(context, CL_MEM_READ_WRITE,
+                             buffer.size() * sizeof(int));
 
     queue.enqueueWriteBuffer(buffer_on_gpu, CL_TRUE, 0,
-                                buffer.size() * sizeof(int),
-                                buffer.data());
+                             buffer.size() * sizeof(int), buffer.data());
 
     return buffer_on_gpu;
 }
