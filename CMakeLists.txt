@@ -8,6 +8,4 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 enable_testing()
 add_subdirectory(sorting_on_CPU)
-add_subdirectory(sorting_on_GPU)
-add_subdirectory(tests)
-
+# add_subdirectory(sorting_on_GPU)

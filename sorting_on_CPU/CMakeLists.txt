@@ -16,4 +16,4 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 enable_testing()
-#add_subdirectory(tests)
+add_subdirectory(tests)
