@@ -6,6 +6,8 @@ input.txt
 
 tests/data/*
 tests/answ/*
+tests/end_to_end/data/*
+tests/end_to_end/answ/*
 
 .cache/
 

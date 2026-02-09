@@ -23,7 +23,7 @@ FONT_BTN = ("Segoe UI", 12, "bold")
 # ---------- окно ----------
 window = tk.Tk()
 window.title("generator")
-window.geometry("600x670")
+window.geometry("600x870")
 window.resizable(False, False)
 window.configure(bg=BG)
 
@@ -76,21 +76,31 @@ def generate_tests():
     tests_per_file = safe_int(entry_tests)
 
     if files_count <= 0:
-        print("Ошибка: количество файлов должно быть > 0")
+        print("Error: the number of files must be > 0")
         return
+
     if tests_per_file <= 0:
-        print("Ошибка: количество чисел в файле должно быть > 0")
+        print("Error: the number of numbers per file must be > 0")
         return
 
-    base_dir = Path(__file__).resolve().parent
+    range_from = safe_int(entry_range_from)
+    range_to = safe_int(entry_range_to)
+    
+    if range_from > range_to:
+        print("Error: Range From cannot be greater than Range To")
+        return
 
-    data_dir = base_dir / "data"
-    answ_dir = base_dir / "answ"
-    data_dir.mkdir(exist_ok=True)
-    answ_dir.mkdir(exist_ok=True)
+    rel = entry_path.get().strip() or "./"
+    base_dir = Path(__file__).resolve().parent
+    out_dir = (base_dir / rel).resolve()
+
+    data_dir = out_dir / "data"
+    answ_dir = out_dir / "answ"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    answ_dir.mkdir(parents=True, exist_ok=True)
 
     for i in range(1, files_count + 1):
-        nums = [random.randint(0, 10**9) for _ in range(tests_per_file)]
+        nums = [random.randint(range_from, range_to) for _ in range(tests_per_file)]
 
         data_line = str(tests_per_file) + " " + " ".join(map(str, nums)) + "\n"
         (data_dir / f"{i}.txt").write_text(data_line, encoding="utf-8")
@@ -99,7 +109,8 @@ def generate_tests():
         answ_line = " ".join(map(str, nums_sorted)) + "\n"
         (answ_dir / f"{i}.txt").write_text(answ_line, encoding="utf-8")
 
-    print(f"Готово: создано {files_count} файлов в {data_dir} и ответы в {answ_dir}")
+    print(f"Done: \n{files_count} files created in \n{data_dir}, \nand answers in \n{answ_dir}")
+
     close_window()
 
 
@@ -132,6 +143,28 @@ btn_files_plus.grid(row=1, column=2, padx=(10, 16), pady=(0, 16), sticky="ew")
 btn_files_minus.configure(height=1)
 btn_files_plus.configure(height=1)
 
+# ---------- карточка: range ----------
+card3 = ttk.Frame(root, style="Card.TFrame")
+card3.pack(fill="x", pady=10)
+
+card3.grid_columnconfigure(0, weight=1)
+card3.grid_columnconfigure(2, weight=1)
+
+ttk.Label(card3, text="Range of numbers", style="Sub.TLabel").grid(
+    row=0, column=0, columnspan=3, sticky="w", padx=16, pady=(14, 8)
+)
+
+entry_range_from = ttk.Entry(card3, justify="center")
+entry_range_from.grid(row=1, column=0, padx=(16, 8), pady=(0, 16), sticky="ew")
+set_int(entry_range_from, 0)
+
+dash = ttk.Label(card3, text="—", style="Sub.TLabel") 
+dash.grid(row=1, column=1, padx=0, pady=(0, 16))
+
+entry_range_to = ttk.Entry(card3, justify="center")
+entry_range_to.grid(row=1, column=2, padx=(8, 16), pady=(0, 16), sticky="ew")
+set_int(entry_range_to, 10**9)
+
 
 # ---------- карточка: tests per file ----------
 card2 = ttk.Frame(root, style="Card.TFrame")
@@ -153,6 +186,24 @@ btn_tests_plus.grid(row=1, column=2, padx=(10, 16), pady=(0, 16), sticky="ew")
 
 btn_tests_minus.configure(height=1)
 btn_tests_plus.configure(height=1)
+
+# ---------- карточка: path ----------
+card4 = ttk.Frame(root, style="Card.TFrame")
+card4.pack(fill="x", pady=10)
+card4.grid_columnconfigure(1, weight=1)
+
+ttk.Label(card4, text="Output folder", style="Sub.TLabel").grid(
+    row=0, column=0, columnspan=2, sticky="w", padx=16, pady=(14, 8)
+)
+
+prefix = ttk.Label(card4, text="curr_dir/", style="Sub.TLabel")
+prefix.grid(row=1, column=0, padx=(16, 8), pady=(0, 16), sticky="w")
+
+entry_path = ttk.Entry(card4, justify="left")
+entry_path.grid(row=1, column=1, padx=(0, 16), pady=(0, 16), sticky="ew")
+
+entry_path.insert(0, "./")   
+
 
 
 # ---------- нижние кнопки ----------
