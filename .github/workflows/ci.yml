@@ -49,11 +49,6 @@ jobs:
             "cmake" \
             "g++"
 
-      - name: Verify OpenCL installation
-        run: |
-          clinfo
-          ls -la /usr/include/CL/
-
       - name: Install dependencies
         run: |
           sudo apt-get update
