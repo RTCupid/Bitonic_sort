@@ -21,9 +21,11 @@ inline cl::Platform select_platform() {
     throw std::runtime_error("No platform selected");
 }
 
-inline void move_buffer_to_gpu (cl::vector<int> &buffer, cl::Platform &platform) {
+inline void move_buffer_to_gpu(cl::vector<int> &buffer,
+                               cl::Platform &platform) {
     cl_context_properties properties[] = {
-        CL_CONTEXT_PLATFORM, reinterpret_cast<cl_context_properties>(platform()),
+        CL_CONTEXT_PLATFORM,
+        reinterpret_cast<cl_context_properties>(platform()),
         0 // signals end of property list
     };
 
@@ -37,5 +39,4 @@ inline void move_buffer_to_gpu (cl::vector<int> &buffer, cl::Platform &platform)
 
 } // namespace bLab
 
-
-#endif //INCLUDE_UTILS_HPP
+#endif // INCLUDE_UTILS_HPP

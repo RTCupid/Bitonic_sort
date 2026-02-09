@@ -1,8 +1,8 @@
-#include <iostream>
-#include <vector>
+#include "utils.hpp"
 #include <algorithm>
 #include <chrono>
-#include "utils.hpp"
+#include <iostream>
+#include <vector>
 
 int main() {
     // using clock = std::chrono::steady_clock;

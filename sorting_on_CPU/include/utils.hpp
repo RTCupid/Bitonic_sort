@@ -6,9 +6,8 @@
 
 namespace bLab {
 
-template<typename T>
-void dump(const std::vector<T>& vec) {
-    for (const auto& value : vec) {
+template <typename T> void dump(const std::vector<T> &vec) {
+    for (const auto &value : vec) {
         std::cout << value << " ";
     }
     std::cout << std::endl;
@@ -16,5 +15,4 @@ void dump(const std::vector<T>& vec) {
 
 } // namespace bLab
 
-
-#endif //INCLUDE_UTILS_HPP
+#endif // INCLUDE_UTILS_HPP
