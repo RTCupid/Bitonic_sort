@@ -8,6 +8,14 @@ tests/data/*
 tests/answ/*
 tests/end_to_end/data/*
 tests/end_to_end/answ/*
+sorting_on_CPU/tests/data/*
+sorting_on_CPU/tests/answ/*
+sorting_on_CPU/tests/end_to_end/data/*
+sorting_on_CPU/tests/end_to_end/answ/*
+sorting_on_GPU/tests/data/*
+sorting_on_GPU/tests/answ/*
+sorting_on_GPU/tests/end_to_end/data/*
+sorting_on_GPU/tests/end_to_end/answ/*
 
 .cache/
 

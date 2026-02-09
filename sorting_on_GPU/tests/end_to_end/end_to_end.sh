@@ -5,7 +5,8 @@ SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 DATA_DIR="$SCRIPT_DIR/data"
 ANSW_DIR="$SCRIPT_DIR/answ"
 
-BIN="${1:-$SCRIPT_DIR/../../build/sorting_on_CPU/sort_cpu}"
+BIN="${1:-$SCRIPT_DIR/../../../build/sorting_on_GPU/sort_gpu}"
+
 
 if [[ ! -x "$BIN" ]]; then
   echo "ERROR: binary not found or not executable: $BIN" >&2
