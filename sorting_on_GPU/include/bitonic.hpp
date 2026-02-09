@@ -4,22 +4,23 @@
 #define CL_TARGET_OPENCL_VERSION 300
 #define CL_HPP_TARGET_OPENCL_VERSION 300
 
+#include "utils_gpu.hpp"
 #include <CL/cl.h>
 #include <CL/opencl.hpp>
-#include <vector>
 #include <iostream>
-#include "utils_gpu.hpp"
+#include <vector>
 
 namespace bLab {
 
 class Bitonic {
-private:
+  private:
     std::vector<int> data_;
 
     void merge() {}
 
     void split() {}
-public:
+
+  public:
     Bitonic(std::vector<int> &data) : data_{data} {}
 
     void sort() {
@@ -32,7 +33,7 @@ public:
     }
 
     void dump() const {
-        for (const auto& value : data_) {
+        for (const auto &value : data_) {
             std::cout << value << " ";
         }
         std::cout << std::endl;

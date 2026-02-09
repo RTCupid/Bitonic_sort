@@ -1,8 +1,8 @@
+#include "bitonic.hpp"
+#include <chrono>
 #include <iostream>
 #include <ostream>
 #include <vector>
-#include <chrono>
-#include "bitonic.hpp"
 
 int main() {
     using clock = std::chrono::steady_clock;
