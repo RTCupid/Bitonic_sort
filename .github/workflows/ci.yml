@@ -25,7 +25,7 @@ jobs:
     - name: Auto-format code
       run: |
         sudo apt-get install -y clang-format
-        find frontend/src frontend/include -name '*.cpp' -o -name '*.h' -o -name '*.hpp' | xargs clang-format -i
+        find sorting_on_GPU/src sorting_on_GPU/include sorting_on_CPU/src sorting_on_CPU/include -name '*.cpp' -o -name '*.h' -o -name '*.hpp' | xargs clang-format -i
     - name: Commit and push changes
       run: |
         git config --local user.email "action@github.com"
@@ -39,10 +39,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install OpenCL dependencies
+      - name: Install packages (правильный синтаксис)
         run: |
-          sudo apt-get update
-          sudo apt-get install -ocl-icd-opencl-dev ocl-icd-libopencl1 opencl-headers clinfo build-essential cmake
+          sudo apt-get install -y \
+            "ocl-icd-opencl-dev" \
+            "ocl-icd-libopencl1" \
+            "opencl-headers" \
+            "build-essential" \
+            "cmake" \
+            "g++"
 
       - name: Verify OpenCL installation
         run: |
