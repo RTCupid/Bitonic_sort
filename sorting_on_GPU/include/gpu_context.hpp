@@ -4,9 +4,9 @@
 #define CL_TARGET_OPENCL_VERSION 300
 #define CL_HPP_TARGET_OPENCL_VERSION 300
 
+#include "utils_gpu.hpp"
 #include <CL/cl.h>
 #include <CL/opencl.hpp>
-#include "utils_gpu.hpp"
 
 namespace bLab {
 

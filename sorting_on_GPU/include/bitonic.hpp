@@ -20,8 +20,9 @@ class Bitonic {
     const std::string kernel_path_;
 
   public:
-    Bitonic(std::vector<int> &data, const std::string &kernel_path) : data_{data}, kernel_path_{kernel_path} {}
-    
+    Bitonic(std::vector<int> &data, const std::string &kernel_path)
+        : data_{data}, kernel_path_{kernel_path} {}
+
     void sort() {
         cl::Platform platform = select_platform();
 
@@ -51,8 +52,7 @@ class Bitonic {
         cl::Buffer buffer_on_gpu =
             move_buffer_to_gpu(context, queue, padded, platform);
 
-        const std::string kernel_source =
-            read_kernel(kernel_path_);
+        const std::string kernel_source = read_kernel(kernel_path_);
 
         cl::Program program(context, kernel_source);
 

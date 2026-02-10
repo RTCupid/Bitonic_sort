@@ -6,8 +6,8 @@
 
 #include <CL/cl.h>
 #include <CL/opencl.hpp>
-#include <fstream>
 #include <filesystem>
+#include <fstream>
 #include <sstream>
 
 namespace bLab {
@@ -53,7 +53,7 @@ std::string read_kernel(const std::string &path) {
     return ss.str();
 }
 
-inline std::filesystem::path executable_dir(const char* argv0) {
+inline std::filesystem::path executable_dir(const char *argv0) {
     std::filesystem::path exe = std::filesystem::absolute(argv0);
 
     exe = std::filesystem::canonical(exe);
