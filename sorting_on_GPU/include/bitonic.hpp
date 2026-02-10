@@ -7,10 +7,10 @@
 #include "utils_gpu.hpp"
 #include <CL/cl.h>
 #include <CL/opencl.hpp>
-#include <iostream>
-#include <vector>
 #include <fstream>
+#include <iostream>
 #include <limits>
+#include <vector>
 
 namespace bLab {
 
@@ -22,15 +22,15 @@ class Bitonic {
     Bitonic(std::vector<int> &data) : data_{data} {}
 
     static bool is_power_of_two(std::size_t x) {
-      return x && ((x & (x - 1)) == 0);
+        return x && ((x & (x - 1)) == 0);
     }
 
     static std::size_t next_power_of_two(std::size_t x) {
         std::size_t p = 1;
-        while (p < x) p <<= 1;
+        while (p < x)
+            p <<= 1;
         return p;
     }
-    
 
     void sort() {
         cl::Platform platform = select_platform();
@@ -41,7 +41,8 @@ class Bitonic {
 
         std::vector<cl::Device> devices;
         platform.getDevices(CL_DEVICE_TYPE_GPU, &devices);
-        if (devices.empty()) throw std::runtime_error("No GPU devices found");
+        if (devices.empty())
+            throw std::runtime_error("No GPU devices found");
 
         cl::Device device = devices[0];
 
@@ -60,14 +61,17 @@ class Bitonic {
         cl::Buffer buffer_on_gpu =
             move_buffer_to_gpu(context, queue, padded, platform);
 
-        const std::string kernel_source = read_kernel("../sorting_on_GPU/include/kernel.cl");
+        const std::string kernel_source =
+            read_kernel("../sorting_on_GPU/include/kernel.cl");
 
         cl::Program program(context, kernel_source);
 
         cl_int berr = program.build({device});
         if (berr != CL_SUCCESS) {
-            std::string log = program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device);
-            throw std::runtime_error("OpenCL build failed (" + std::to_string(berr) + "):\n" + log);
+            std::string log =
+                program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device);
+            throw std::runtime_error("OpenCL build failed (" +
+                                     std::to_string(berr) + "):\n" + log);
         }
 
         cl::Kernel kernel(program, "bitonic_stage");
@@ -80,16 +84,19 @@ class Bitonic {
                 kernel.setArg(1, j);
                 kernel.setArg(2, k);
 
-                cl_int err = queue.enqueueNDRangeKernel(kernel, cl::NullRange, global, cl::NullRange);
+                cl_int err = queue.enqueueNDRangeKernel(kernel, cl::NullRange,
+                                                        global, cl::NullRange);
                 if (err != CL_SUCCESS) {
-                    throw std::runtime_error("enqueueNDRangeKernel failed: " + std::to_string(err));
+                    throw std::runtime_error("enqueueNDRangeKernel failed: " +
+                                             std::to_string(err));
                 }
             }
         }
 
         queue.finish();
 
-        queue.enqueueReadBuffer(buffer_on_gpu, CL_TRUE, 0, sizeof(int) * n2, padded.data());
+        queue.enqueueReadBuffer(buffer_on_gpu, CL_TRUE, 0, sizeof(int) * n2,
+                                padded.data());
 
         data_.assign(padded.begin(), padded.begin() + n);
     }
@@ -100,7 +107,6 @@ class Bitonic {
         }
         std::cout << std::endl;
     }
- 
 };
 
 } // namespace bLab

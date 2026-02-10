@@ -42,7 +42,7 @@ inline cl::Buffer move_buffer_to_gpu(cl::Context &context,
     return buffer_on_gpu;
 }
 
-std::string read_kernel(const std::string& path) {
+std::string read_kernel(const std::string &path) {
     std::ifstream f(path, std::ios::in | std::ios::binary);
     if (!f) {
         throw std::runtime_error("Failed to open file: " + path);
