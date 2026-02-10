@@ -8,15 +8,14 @@
 #include <CL/cl.h>
 #include <CL/opencl.hpp>
 
-class Gpu_context { //TODO
-private:
+class Gpu_context { // TODO
+  private:
     cl::Platform platform_;
     cl::Device device_;
     cl::Context context_;
     cl::CommandQueue queue_;
 
-public:
-
+  public:
 };
 
 #endif // INCLUDE_GPU_CONTEXT_HPP

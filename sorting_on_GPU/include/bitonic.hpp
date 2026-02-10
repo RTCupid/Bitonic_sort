@@ -20,7 +20,7 @@ class Bitonic {
 
   public:
     Bitonic(std::vector<int> &data) : data_{data} {}
-    
+
     void sort() {
         cl::Platform platform = select_platform();
 
@@ -98,14 +98,14 @@ class Bitonic {
     }
 
   private:
-  
     static bool is_power_of_two(std::size_t x) {
-      return x && ((x & (x - 1)) == 0);
+        return x && ((x & (x - 1)) == 0);
     }
 
     static std::size_t next_power_of_two(std::size_t x) {
         std::size_t p = 1;
-        while (p < x) p <<= 1;
+        while (p < x)
+            p <<= 1;
         return p;
     }
 };
