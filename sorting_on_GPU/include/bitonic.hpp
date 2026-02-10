@@ -60,17 +60,6 @@ class Bitonic {
         cl::Buffer buffer_on_gpu =
             move_buffer_to_gpu(context, queue, padded, platform);
 
-        // const char *kernelSource = R"(
-        //     __kernel void bitonic_sort(
-        //       __global int *A, const unsigned int n) {
-        //       for (int k = 2; k <= n; k *= 2) {
-        //         for (int j = k/2; j >= 1; j /= 2) {
-        //           for (int i = 0; i < k/2; ++i)
-        //             A[i] = A[i+j];
-        //         }
-        //       }
-        //     }
-        // )";
         const std::string kernel_source = read_kernel("../sorting_on_GPU/include/kernel.cl");
 
         cl::Program program(context, kernel_source);
