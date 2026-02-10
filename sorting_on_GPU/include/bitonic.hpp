@@ -25,17 +25,17 @@ class Bitonic {
     void sort() {
         cl::Platform platform = select_platform();
 
-        cl::string name = platform.getInfo<CL_PLATFORM_NAME>();
-        cl::string profile = platform.getInfo<CL_PLATFORM_PROFILE>();
-        std::cout << "Selected: " << name << ": " << profile << '\n';
+        // cl::string name = platform.getInfo<CL_PLATFORM_NAME>();
+        // cl::string profile = platform.getInfo<CL_PLATFORM_PROFILE>();
+        // std::cout << "Selected: " << name << ": " << profile << '\n';
 
         std::vector<cl::Device> devices;
         platform.getDevices(CL_DEVICE_TYPE_GPU, &devices);
 
         cl::Device device = devices[0];
 
-        std::cout << "Using device: " << device.getInfo<CL_DEVICE_NAME>()
-                  << '\n';
+        // std::cout << "Using device: " << device.getInfo<CL_DEVICE_NAME>()
+        //           << '\n';
 
         cl::Context context(device);
         cl::CommandQueue queue(context, device);
@@ -68,7 +68,7 @@ class Bitonic {
                                    cl::NDRange(data_.size()), cl::NullRange);
 
         queue.enqueueReadBuffer(buffer_on_gpu, CL_TRUE, 0,
-                                sizeof(float) * data_.size(), data_.data());
+                                sizeof(int) * data_.size(), data_.data());
 
         queue.finish();
     }
