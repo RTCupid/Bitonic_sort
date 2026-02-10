@@ -42,15 +42,14 @@ inline cl::Buffer move_buffer_to_gpu(cl::Context &context,
     return buffer_on_gpu;
 }
 
-inline std::string load_kernel(const std::string &filepath) {
-    std::ifstream file(filepath);
-    if (!file.is_open()) {
-        throw std::runtime_error("Failed to open kernel file: " + filepath);
+std::string read_kernel(const std::string& path) {
+    std::ifstream f(path, std::ios::in | std::ios::binary);
+    if (!f) {
+        throw std::runtime_error("Failed to open file: " + path);
     }
-
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    return buffer.str();
+    std::ostringstream ss;
+    ss << f.rdbuf();
+    return ss.str();
 }
 
 } // namespace bLab
