@@ -6,6 +6,8 @@
 
 #include <CL/cl.h>
 #include <CL/opencl.hpp>
+#include <fstream>
+#include <sstream>
 
 namespace bLab {
 
@@ -38,6 +40,17 @@ inline cl::Buffer move_buffer_to_gpu(cl::Context &context,
                              buffer.size() * sizeof(int), buffer.data());
 
     return buffer_on_gpu;
+}
+
+inline std::string load_kernel(const std::string& filepath) {
+    std::ifstream file(filepath);
+    if (!file.is_open()) {
+        throw std::runtime_error("Failed to open kernel file: " + filepath);
+    }
+    
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
 }
 
 } // namespace bLab
