@@ -4,7 +4,7 @@
 #include <ostream>
 #include <vector>
 
-int main() {
+int main(int argc, char** argv) {
     // using clock = std::chrono::steady_clock;
     // using duration = std::chrono::duration<double, std::milli>;
 
@@ -16,7 +16,10 @@ int main() {
     for (std::size_t i = 0; i < count && std::cin >> value; ++i)
         data.push_back(value);
 
-    bLab::Bitonic bitonic{data};
+    auto exe_dir = bLab::executable_dir(argv[0]);
+    auto kernel_path = exe_dir / "../" / "../" / "sorting_on_GPU" / "include" / "kernel.cl";
+
+    bLab::Bitonic bitonic{data, kernel_path.string()};
 
     // std::cout << "data before sorting:" << std::endl;
     // bitonic.dump();

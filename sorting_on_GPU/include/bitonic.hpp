@@ -17,10 +17,11 @@ namespace bLab {
 class Bitonic {
   private:
     std::vector<int> data_;
+    const std::string kernel_path_;
 
   public:
-    Bitonic(std::vector<int> &data) : data_{data} {}
-
+    Bitonic(std::vector<int> &data, const std::string &kernel_path) : data_{data}, kernel_path_{kernel_path} {}
+    
     void sort() {
         cl::Platform platform = select_platform();
 
@@ -51,7 +52,7 @@ class Bitonic {
             move_buffer_to_gpu(context, queue, padded, platform);
 
         const std::string kernel_source =
-            read_kernel("../sorting_on_GPU/include/kernel.cl");
+            read_kernel(kernel_path_);
 
         cl::Program program(context, kernel_source);
 

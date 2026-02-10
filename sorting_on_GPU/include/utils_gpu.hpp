@@ -7,6 +7,7 @@
 #include <CL/cl.h>
 #include <CL/opencl.hpp>
 #include <fstream>
+#include <filesystem>
 #include <sstream>
 
 namespace bLab {
@@ -50,6 +51,14 @@ std::string read_kernel(const std::string &path) {
     std::ostringstream ss;
     ss << f.rdbuf();
     return ss.str();
+}
+
+inline std::filesystem::path executable_dir(const char* argv0) {
+    std::filesystem::path exe = std::filesystem::absolute(argv0);
+
+    exe = std::filesystem::canonical(exe);
+
+    return exe.parent_path();
 }
 
 } // namespace bLab
