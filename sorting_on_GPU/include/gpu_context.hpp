@@ -20,11 +20,11 @@ class Gpu_context {
   public:
     ~Gpu_context() = default;
 
-    Gpu_context(const Gpu_context&) = delete;
-    Gpu_context& operator=(const Gpu_context&) = delete;
+    Gpu_context(const Gpu_context &) = delete;
+    Gpu_context &operator=(const Gpu_context &) = delete;
 
-    Gpu_context(Gpu_context&&) = default;
-    Gpu_context& operator=(Gpu_context&&) = default;
+    Gpu_context(Gpu_context &&) = default;
+    Gpu_context &operator=(Gpu_context &&) = default;
 
     Gpu_context() {
         auto [platform, type] = select_platform();
@@ -44,10 +44,10 @@ class Gpu_context {
         queue_ = cl::CommandQueue(context_, device_);
     }
 
-    cl::CommandQueue& get_queue() { return queue_; }
-    cl::Context& get_context() { return context_; }
-    cl::Device& get_device() { return device_; }
-    cl::Platform& get_platform() { return platform_; }
+    cl::CommandQueue &get_queue() { return queue_; }
+    cl::Context &get_context() { return context_; }
+    cl::Device &get_device() { return device_; }
+    cl::Platform &get_platform() { return platform_; }
 
     void finish() { queue_.finish(); }
 };

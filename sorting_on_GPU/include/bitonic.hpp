@@ -4,10 +4,10 @@
 #define CL_TARGET_OPENCL_VERSION 300
 #define CL_HPP_TARGET_OPENCL_VERSION 300
 
-#include "gpu_context.hpp"
-#include "utils_gpu.hpp"
 #include "buffer.hpp"
+#include "gpu_context.hpp"
 #include "kernel.hpp"
+#include "utils_gpu.hpp"
 #include <CL/cl.h>
 #include <CL/opencl.hpp>
 #include <iostream>
@@ -16,9 +16,7 @@
 
 namespace bLab {
 
-static bool is_power_of_two(std::size_t x) {
-        return x && ((x & (x - 1)) == 0);
-    }
+static bool is_power_of_two(std::size_t x) { return x && ((x & (x - 1)) == 0); }
 
 static std::size_t next_power_of_two(std::size_t x) {
     std::size_t p = 1;
@@ -63,7 +61,8 @@ class Bitonic {
     }
 
   private:
-    void run_bitonic_sort(Gpu_context &gpu_context, Kernel &kernel, Buffer &buffer, const size_t &n) {
+    void run_bitonic_sort(Gpu_context &gpu_context, Kernel &kernel,
+                          Buffer &buffer, const size_t &n) {
         cl::NDRange global(n);
 
         for (cl_uint k = 2; k <= (cl_uint)n; k <<= 1) {
@@ -91,7 +90,6 @@ class Bitonic {
 
         return padded;
     }
-
 };
 
 } // namespace bLab
