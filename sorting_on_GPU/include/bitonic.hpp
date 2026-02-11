@@ -4,14 +4,14 @@
 #define CL_TARGET_OPENCL_VERSION 300
 #define CL_HPP_TARGET_OPENCL_VERSION 300
 
+#include "gpu_context.hpp"
+#include "utils_gpu.hpp"
 #include <CL/cl.h>
 #include <CL/opencl.hpp>
 #include <fstream>
 #include <iostream>
 #include <limits>
 #include <vector>
-#include "utils_gpu.hpp"
-#include "gpu_context.hpp"
 
 namespace bLab {
 
@@ -34,7 +34,8 @@ class Bitonic {
         padded.resize(n2, std::numeric_limits<int>::max());
 
         cl::Buffer buffer_on_gpu =
-            move_buffer_to_gpu(gpu_context.context, gpu_context.queue, padded, gpu_context.platform);
+            move_buffer_to_gpu(gpu_context.context, gpu_context.queue, padded,
+                               gpu_context.platform);
 
         const std::string kernel_source = read_kernel(kernel_path_);
 
@@ -58,8 +59,8 @@ class Bitonic {
                 kernel.setArg(1, j);
                 kernel.setArg(2, k);
 
-                cl_int err = gpu_context.queue.enqueueNDRangeKernel(kernel, cl::NullRange,
-                                                        global, cl::NullRange);
+                cl_int err = gpu_context.queue.enqueueNDRangeKernel(
+                    kernel, cl::NullRange, global, cl::NullRange);
                 if (err != CL_SUCCESS) {
                     throw std::runtime_error("enqueueNDRangeKernel failed: " +
                                              std::to_string(err));
@@ -69,8 +70,8 @@ class Bitonic {
 
         gpu_context.queue.finish();
 
-        gpu_context.queue.enqueueReadBuffer(buffer_on_gpu, CL_TRUE, 0, sizeof(int) * n2,
-                                padded.data());
+        gpu_context.queue.enqueueReadBuffer(buffer_on_gpu, CL_TRUE, 0,
+                                            sizeof(int) * n2, padded.data());
 
         data_.assign(padded.begin(), padded.begin() + n);
     }
