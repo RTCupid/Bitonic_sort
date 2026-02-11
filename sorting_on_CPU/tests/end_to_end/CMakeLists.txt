@@ -5,6 +5,6 @@ add_test(
 
 set_tests_properties(end_to_end PROPERTIES 
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    LABELS "end_to_end"
+    LABELS "end_to_end_cpu" 
 )
 

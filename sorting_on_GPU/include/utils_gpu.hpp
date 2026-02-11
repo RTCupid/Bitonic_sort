@@ -6,6 +6,9 @@
 
 #include <CL/cl.h>
 #include <CL/opencl.hpp>
+#include <filesystem>
+#include <fstream>
+#include <sstream>
 
 namespace bLab {
 
@@ -38,6 +41,24 @@ inline cl::Buffer move_buffer_to_gpu(cl::Context &context,
                              buffer.size() * sizeof(int), buffer.data());
 
     return buffer_on_gpu;
+}
+
+std::string read_kernel(const std::string &path) {
+    std::ifstream f(path, std::ios::in | std::ios::binary);
+    if (!f) {
+        throw std::runtime_error("Failed to open file: " + path);
+    }
+    std::ostringstream ss;
+    ss << f.rdbuf();
+    return ss.str();
+}
+
+inline std::filesystem::path executable_dir(const char *argv0) {
+    std::filesystem::path exe = std::filesystem::absolute(argv0);
+
+    exe = std::filesystem::canonical(exe);
+
+    return exe.parent_path();
 }
 
 } // namespace bLab

@@ -1,9 +1,22 @@
-__kernel void bitonic_sort(
-    __global TYPE *A) {
-  for (int k = 2; k <= A.size(); k *= 2) {
-    for (int j = k/2; j >= 1; j /= 2) {
-      for (int i = 0; i < k/2; ++i)
-        compare_and_swap(A[i], A[i + j]);
+inline void compare_and_swap(__global int* A, uint i, uint ixj, uint ascending)
+{
+    int ai = A[i];
+    int aj = A[ixj];
+
+    int swap = ascending ? (ai > aj) : (ai < aj);
+    if (swap) {
+        A[i]   = aj;
+        A[ixj] = ai;
     }
-  }
+}
+
+__kernel void bitonic_stage(__global int* A, uint j, uint k)
+{
+    uint i = (uint)get_global_id(0);
+    uint ixj = i ^ j;
+
+    if (ixj > i) {
+        uint ascending = ((i & k) == 0);
+        compare_and_swap(A, i, ixj, ascending);
+    }
 }
