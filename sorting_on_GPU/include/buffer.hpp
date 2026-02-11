@@ -19,14 +19,6 @@ private:
 public:
     Buffer(Gpu_context& context, const std::vector<int>& data, cl_mem_flags flags = CL_MEM_READ_WRITE)
         : context_(context), size_(data.size() * sizeof(int)) {
-//         cl_context_properties properties[] = {
-//             CL_CONTEXT_PLATFORM,
-//             reinterpret_cast<cl_context_properties>(context.get_platform()()),
-//             0
-//         };
-//
-//         cl::Context context_with_props(context.get_device(), properties);
-
         buffer_ = cl::Buffer(context.get_context(), flags, size_);
 
         cl::CommandQueue queue(context.get_context(), context.get_device());
