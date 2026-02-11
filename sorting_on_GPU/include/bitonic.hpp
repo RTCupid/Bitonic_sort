@@ -24,16 +24,20 @@ class Bitonic {
         : data_{data}, kernel_path_{kernel_path} {}
 
     void sort() {
-        cl::Platform platform = select_platform();
+        auto platform = select_platform();
 
         // cl::string name = platform.getInfo<CL_PLATFORM_NAME>();
         // cl::string profile = platform.getInfo<CL_PLATFORM_PROFILE>();
         // std::cout << "Selected: " << name << ": " << profile << '\n';
 
         std::vector<cl::Device> devices;
-        platform.getDevices(CL_DEVICE_TYPE_GPU, &devices);
+        if (platform.second == gpu)
+            platform.first.getDevices(CL_DEVICE_TYPE_GPU, &devices);
+        else
+            platform.first.getDevices(CL_DEVICE_TYPE_CPU, &devices);
+
         if (devices.empty())
-            throw std::runtime_error("No GPU devices found");
+            throw std::runtime_error("No devices found");
 
         cl::Device device = devices[0];
 
@@ -50,7 +54,7 @@ class Bitonic {
         padded.resize(n2, std::numeric_limits<int>::max());
 
         cl::Buffer buffer_on_gpu =
-            move_buffer_to_gpu(context, queue, padded, platform);
+            move_buffer_to_gpu(context, queue, padded, platform.first);
 
         const std::string kernel_source = read_kernel(kernel_path_);
 

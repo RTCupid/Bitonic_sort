@@ -1,6 +1,7 @@
 #ifndef INCLUDE_UTILS_GPU_HPP
 #define INCLUDE_UTILS_GPU_HPP
 
+#include <utility>
 #define CL_TARGET_OPENCL_VERSION 300
 #define CL_HPP_TARGET_OPENCL_VERSION 300
 
@@ -12,7 +13,12 @@
 
 namespace bLab {
 
-inline cl::Platform select_platform() {
+enum type_device {
+    gpu,
+    cpu,
+};
+
+inline std::pair<cl::Platform, type_device> select_platform() {
     cl::vector<cl::Platform> platforms;
     cl::Platform::get(&platforms);
 
@@ -20,14 +26,14 @@ inline cl::Platform select_platform() {
         cl_uint num_devices = 0;
         clGetDeviceIDs(p(), CL_DEVICE_TYPE_GPU, 0, NULL, &num_devices);
         if (num_devices > 0)
-            return cl::Platform(p);
+            return std::make_pair(cl::Platform(p), gpu);
     }
 
     for (auto p : platforms) {
         cl_uint num_devices = 0;
         clGetDeviceIDs(p(), CL_DEVICE_TYPE_CPU, 0, NULL, &num_devices);
         if (num_devices > 0) {
-            return cl::Platform(p);
+            return std::make_pair(cl::Platform(p), cpu);
         }
     }
 
