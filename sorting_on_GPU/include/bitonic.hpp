@@ -4,13 +4,14 @@
 #define CL_TARGET_OPENCL_VERSION 300
 #define CL_HPP_TARGET_OPENCL_VERSION 300
 
-#include "utils_gpu.hpp"
 #include <CL/cl.h>
 #include <CL/opencl.hpp>
 #include <fstream>
 #include <iostream>
 #include <limits>
 #include <vector>
+#include "utils_gpu.hpp"
+#include "gpu_context.hpp"
 
 namespace bLab {
 
@@ -24,28 +25,7 @@ class Bitonic {
         : data_{data}, kernel_path_{kernel_path} {}
 
     void sort() {
-        auto platform = select_platform();
-
-        // cl::string name = platform.getInfo<CL_PLATFORM_NAME>();
-        // cl::string profile = platform.getInfo<CL_PLATFORM_PROFILE>();
-        // std::cout << "Selected: " << name << ": " << profile << '\n';
-
-        std::vector<cl::Device> devices;
-        if (platform.second == gpu)
-            platform.first.getDevices(CL_DEVICE_TYPE_GPU, &devices);
-        else
-            platform.first.getDevices(CL_DEVICE_TYPE_CPU, &devices);
-
-        if (devices.empty())
-            throw std::runtime_error("No devices found");
-
-        cl::Device device = devices[0];
-
-        // std::cout << "Using device: " << device.getInfo<CL_DEVICE_NAME>()
-        //           << '\n';
-
-        cl::Context context(device);
-        cl::CommandQueue queue(context, device);
+        Gpu_context gpu_context{};
 
         const std::size_t n = data_.size();
         const std::size_t n2 = is_power_of_two(n) ? n : next_power_of_two(n);
@@ -54,16 +34,16 @@ class Bitonic {
         padded.resize(n2, std::numeric_limits<int>::max());
 
         cl::Buffer buffer_on_gpu =
-            move_buffer_to_gpu(context, queue, padded, platform.first);
+            move_buffer_to_gpu(gpu_context.context, gpu_context.queue, padded, gpu_context.platform);
 
         const std::string kernel_source = read_kernel(kernel_path_);
 
-        cl::Program program(context, kernel_source);
+        cl::Program program(gpu_context.context, kernel_source);
 
-        cl_int berr = program.build({device});
+        cl_int berr = program.build({gpu_context.device});
         if (berr != CL_SUCCESS) {
             std::string log =
-                program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device);
+                program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(gpu_context.device);
             throw std::runtime_error("OpenCL build failed (" +
                                      std::to_string(berr) + "):\n" + log);
         }
@@ -78,7 +58,7 @@ class Bitonic {
                 kernel.setArg(1, j);
                 kernel.setArg(2, k);
 
-                cl_int err = queue.enqueueNDRangeKernel(kernel, cl::NullRange,
+                cl_int err = gpu_context.queue.enqueueNDRangeKernel(kernel, cl::NullRange,
                                                         global, cl::NullRange);
                 if (err != CL_SUCCESS) {
                     throw std::runtime_error("enqueueNDRangeKernel failed: " +
@@ -87,9 +67,9 @@ class Bitonic {
             }
         }
 
-        queue.finish();
+        gpu_context.queue.finish();
 
-        queue.enqueueReadBuffer(buffer_on_gpu, CL_TRUE, 0, sizeof(int) * n2,
+        gpu_context.queue.enqueueReadBuffer(buffer_on_gpu, CL_TRUE, 0, sizeof(int) * n2,
                                 padded.data());
 
         data_.assign(padded.begin(), padded.begin() + n);

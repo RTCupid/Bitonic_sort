@@ -10,14 +10,30 @@
 
 namespace bLab {
 
-class Gpu_context { // TODO
-  private:
-    cl::Platform platform_;
-    cl::Device device_;
-    cl::Context context_;
-    cl::CommandQueue queue_;
-
+class Gpu_context {
   public:
+    cl::Platform platform;
+    cl::Device device;
+    cl::Context context;
+    cl::CommandQueue queue;
+
+    Gpu_context() {
+        auto [platform, type] = select_platform();
+
+        std::vector<cl::Device> devices;
+        if (type == type_device::gpu)
+            platform.getDevices(CL_DEVICE_TYPE_GPU, &devices);
+        else
+            platform.getDevices(CL_DEVICE_TYPE_CPU, &devices);
+
+        if (devices.empty())
+            throw std::runtime_error("No devices found");
+
+        device = devices[0];
+
+        context = cl::Context(device);
+        queue = cl::CommandQueue(context, device);
+    }
 };
 
 } // namespace bLab
