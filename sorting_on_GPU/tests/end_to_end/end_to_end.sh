@@ -2,8 +2,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-DATA_DIR="$SCRIPT_DIR/../../../tests/data"
-ANSW_DIR="$SCRIPT_DIR/../../../tests/answ"
+DATA_DIR="$SCRIPT_DIR/data"
+ANSW_DIR="$SCRIPT_DIR/answ"
 
 BIN="${1:-$SCRIPT_DIR/../../../build/sorting_on_GPU/sort_gpu}"
 

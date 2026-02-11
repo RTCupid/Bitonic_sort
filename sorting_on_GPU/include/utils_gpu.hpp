@@ -1,6 +1,7 @@
 #ifndef INCLUDE_UTILS_GPU_HPP
 #define INCLUDE_UTILS_GPU_HPP
 
+#include <utility>
 #define CL_TARGET_OPENCL_VERSION 300
 #define CL_HPP_TARGET_OPENCL_VERSION 300
 
@@ -12,15 +13,30 @@
 
 namespace bLab {
 
-inline cl::Platform select_platform() {
+enum class type_device {
+    gpu,
+    cpu,
+};
+
+inline std::pair<cl::Platform, type_device> select_platform() {
     cl::vector<cl::Platform> platforms;
     cl::Platform::get(&platforms);
+
     for (auto p : platforms) {
         cl_uint num_devices = 0;
         clGetDeviceIDs(p(), CL_DEVICE_TYPE_GPU, 0, NULL, &num_devices);
         if (num_devices > 0)
-            return cl::Platform(p);
+            return std::make_pair(cl::Platform(p), type_device::gpu);
     }
+
+    for (auto p : platforms) {
+        cl_uint num_devices = 0;
+        clGetDeviceIDs(p(), CL_DEVICE_TYPE_CPU, 0, NULL, &num_devices);
+        if (num_devices > 0) {
+            return std::make_pair(cl::Platform(p), type_device::cpu);
+        }
+    }
+
     throw std::runtime_error("No platform selected");
 }
 
@@ -43,7 +59,7 @@ inline cl::Buffer move_buffer_to_gpu(cl::Context &context,
     return buffer_on_gpu;
 }
 
-std::string read_kernel(const std::string &path) {
+inline std::string read_kernel(const std::string &path) {
     std::ifstream f(path, std::ios::in | std::ios::binary);
     if (!f) {
         throw std::runtime_error("Failed to open file: " + path);

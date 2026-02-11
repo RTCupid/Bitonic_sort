@@ -41,13 +41,16 @@ jobs:
 
       - name: Install packages (правильный синтаксис)
         run: |
+          sudo apt-get update
           sudo apt-get install -y \
             "ocl-icd-opencl-dev" \
             "ocl-icd-libopencl1" \
             "opencl-headers" \
             "build-essential" \
             "cmake" \
-            "g++"
+            "g++" \
+            "pocl-opencl-icd" \
+            "ocl-icd-dev"
 
       - name: Install dependencies
         run: |

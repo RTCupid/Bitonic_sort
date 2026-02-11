@@ -8,6 +8,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(OpenCL REQUIRED)
+if(NOT OpenCL_FOUND)
+    message(WARNING "OpenCL not found, building without GPU support")
+    add_definitions(-DNO_OPENCL)
+endif()
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
