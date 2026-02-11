@@ -15,12 +15,22 @@ namespace bLab {
 inline cl::Platform select_platform() {
     cl::vector<cl::Platform> platforms;
     cl::Platform::get(&platforms);
+
     for (auto p : platforms) {
         cl_uint num_devices = 0;
         clGetDeviceIDs(p(), CL_DEVICE_TYPE_GPU, 0, NULL, &num_devices);
         if (num_devices > 0)
             return cl::Platform(p);
     }
+
+    for (auto p : platforms) {
+        cl_uint num_devices = 0;
+        clGetDeviceIDs(p(), CL_DEVICE_TYPE_CPU, 0, NULL, &num_devices);
+        if (num_devices > 0) {
+            return cl::Platform(p);
+        }
+    }
+
     throw std::runtime_error("No platform selected");
 }
 
