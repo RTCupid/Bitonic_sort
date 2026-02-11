@@ -1,5 +1,5 @@
-#ifndef INCLUDE_GPU_CONTEXT_HPP
-#define INCLUDE_GPU_CONTEXT_HPP
+#ifndef SORTING_ON_GPU_INCLUDE_CONTEXT_HPP
+#define SORTING_ON_GPU_INCLUDE_CONTEXT_HPP
 
 #define CL_TARGET_OPENCL_VERSION 300
 #define CL_HPP_TARGET_OPENCL_VERSION 300
@@ -11,11 +11,20 @@
 namespace bLab {
 
 class Gpu_context {
+  private:
+    cl::Platform platform_;
+    cl::Device device_;
+    cl::Context context_;
+    cl::CommandQueue queue_;
+
   public:
-    cl::Platform platform;
-    cl::Device device;
-    cl::Context context;
-    cl::CommandQueue queue;
+    ~Gpu_context() = default;
+
+    Gpu_context(const Gpu_context&) = delete;
+    Gpu_context& operator=(const Gpu_context&) = delete;
+
+    Gpu_context(Gpu_context&&) = default;
+    Gpu_context& operator=(Gpu_context&&) = default;
 
     Gpu_context() {
         auto [platform, type] = select_platform();
@@ -29,13 +38,20 @@ class Gpu_context {
         if (devices.empty())
             throw std::runtime_error("No devices found");
 
-        device = devices[0];
+        device_ = devices[0];
 
-        context = cl::Context(device);
-        queue = cl::CommandQueue(context, device);
+        context_ = cl::Context(device_);
+        queue_ = cl::CommandQueue(context_, device_);
     }
+
+    cl::CommandQueue& get_queue() { return queue_; }
+    cl::Context& get_context() { return context_; }
+    cl::Device& get_device() { return device_; }
+    cl::Platform& get_platform() { return platform_; }
+
+    void finish() { queue_.finish(); }
 };
 
 } // namespace bLab
 
-#endif // INCLUDE_GPU_CONTEXT_HPP
+#endif // SORTING_ON_GPU_INCLUDE_CONTEXT_HPP

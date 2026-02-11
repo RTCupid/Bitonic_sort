@@ -6,74 +6,53 @@
 
 #include "gpu_context.hpp"
 #include "utils_gpu.hpp"
+#include "buffer.hpp"
+#include "kernel.hpp"
 #include <CL/cl.h>
 #include <CL/opencl.hpp>
-#include <fstream>
 #include <iostream>
 #include <limits>
 #include <vector>
 
 namespace bLab {
 
+static bool is_power_of_two(std::size_t x) {
+        return x && ((x & (x - 1)) == 0);
+    }
+
+static std::size_t next_power_of_two(std::size_t x) {
+    std::size_t p = 1;
+    while (p < x)
+        p <<= 1;
+    return p;
+}
+
 class Bitonic {
   private:
     std::vector<int> data_;
-    const std::string kernel_path_;
+    const std::string kernel_source_;
+    Gpu_context gpu_context_;
 
   public:
     Bitonic(std::vector<int> &data, const std::string &kernel_path)
-        : data_{data}, kernel_path_{kernel_path} {}
+        : data_{data}, kernel_source_{read_kernel(kernel_path)} {}
 
     void sort() {
-        Gpu_context gpu_context{};
+        auto padded = pad_data_to_power_of_two();
 
-        const std::size_t n = data_.size();
-        const std::size_t n2 = is_power_of_two(n) ? n : next_power_of_two(n);
+        auto n = padded.size();
 
-        std::vector<int> padded = data_;
-        padded.resize(n2, std::numeric_limits<int>::max());
+        Buffer buffer(gpu_context_, padded);
 
-        cl::Buffer buffer_on_gpu =
-            move_buffer_to_gpu(gpu_context.context, gpu_context.queue, padded,
-                               gpu_context.platform);
+        Kernel kernel(gpu_context_, kernel_source_, "bitonic_stage");
 
-        const std::string kernel_source = read_kernel(kernel_path_);
+        run_bitonic_sort(gpu_context_, kernel, buffer, n);
 
-        cl::Program program(gpu_context.context, kernel_source);
+        gpu_context_.finish();
 
-        cl_int berr = program.build({gpu_context.device});
-        if (berr != CL_SUCCESS) {
-            std::string log =
-                program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(gpu_context.device);
-            throw std::runtime_error("OpenCL build failed (" +
-                                     std::to_string(berr) + "):\n" + log);
-        }
+        buffer.read(padded, true);
 
-        cl::Kernel kernel(program, "bitonic_stage");
-
-        cl::NDRange global(n2);
-
-        for (cl_uint k = 2; k <= (cl_uint)n2; k <<= 1) {
-            for (cl_uint j = k >> 1; j > 0; j >>= 1) {
-                kernel.setArg(0, buffer_on_gpu);
-                kernel.setArg(1, j);
-                kernel.setArg(2, k);
-
-                cl_int err = gpu_context.queue.enqueueNDRangeKernel(
-                    kernel, cl::NullRange, global, cl::NullRange);
-                if (err != CL_SUCCESS) {
-                    throw std::runtime_error("enqueueNDRangeKernel failed: " +
-                                             std::to_string(err));
-                }
-            }
-        }
-
-        gpu_context.queue.finish();
-
-        gpu_context.queue.enqueueReadBuffer(buffer_on_gpu, CL_TRUE, 0,
-                                            sizeof(int) * n2, padded.data());
-
-        data_.assign(padded.begin(), padded.begin() + n);
+        data_.assign(padded.begin(), padded.begin() + data_.size());
     }
 
     void dump() const {
@@ -84,16 +63,35 @@ class Bitonic {
     }
 
   private:
-    static bool is_power_of_two(std::size_t x) {
-        return x && ((x & (x - 1)) == 0);
+    void run_bitonic_sort(Gpu_context &gpu_context, Kernel &kernel, Buffer &buffer, const size_t &n) {
+        cl::NDRange global(n);
+
+        for (cl_uint k = 2; k <= (cl_uint)n; k <<= 1) {
+            for (cl_uint j = k >> 1; j > 0; j >>= 1) {
+                kernel.set_arg(0, buffer);
+                kernel.set_arg(1, j);
+                kernel.set_arg(2, k);
+
+                cl_int err = gpu_context.get_queue().enqueueNDRangeKernel(
+                    kernel.get(), cl::NullRange, global, cl::NullRange);
+                if (err != CL_SUCCESS) {
+                    throw std::runtime_error("enqueueNDRangeKernel failed: " +
+                                             std::to_string(err));
+                }
+            }
+        }
     }
 
-    static std::size_t next_power_of_two(std::size_t x) {
-        std::size_t p = 1;
-        while (p < x)
-            p <<= 1;
-        return p;
+    std::vector<int> pad_data_to_power_of_two() const {
+        const std::size_t n = data_.size();
+        const std::size_t n2 = is_power_of_two(n) ? n : next_power_of_two(n);
+
+        std::vector<int> padded = data_;
+        padded.resize(n2, std::numeric_limits<int>::max());
+
+        return padded;
     }
+
 };
 
 } // namespace bLab
