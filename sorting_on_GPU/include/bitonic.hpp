@@ -43,7 +43,7 @@ class Bitonic {
             throw std::runtime_error("Invalid state");
 
         auto padded = pad_data_to_power_of_two();
-
+        
         auto n = padded.size();
 
         Buffer buffer(gpu_context_, padded);
