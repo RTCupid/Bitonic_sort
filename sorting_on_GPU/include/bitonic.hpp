@@ -37,7 +37,7 @@ class Bitonic {
 
     void sort() {
         auto padded = pad_data_to_power_of_two();
-
+        
         auto n = padded.size();
 
         Buffer buffer(gpu_context_, padded);
