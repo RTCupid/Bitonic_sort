@@ -18,20 +18,13 @@ class Kernel {
     cl::Program program_;
 
   public:
+    // @param context must live longer than Kernel
     Kernel(Gpu_context &context, const std::string &kernel_source,
            const std::string &kernel_name)
         : context_(context) {
         program_ = cl::Program(context_.get_context(), kernel_source);
-
-        cl_int berr = program_.build({context.get_device()});
-        if (berr != CL_SUCCESS) {
-            std::string log = program_.getBuildInfo<CL_PROGRAM_BUILD_LOG>(
-                context.get_device());
-            throw std::runtime_error("OpenCL build failed (" +
-                                     std::to_string(berr) + "):\n" + log);
-        }
-
-        kernel_ = cl::Kernel(program_, "bitonic_stage");
+        program_.build({context.get_device()});
+        kernel_ = cl::Kernel(program_, kernel_name.c_str());
     }
 
     ~Kernel() = default;
@@ -42,19 +35,11 @@ class Kernel {
     Kernel &operator=(Kernel &&) = default;
 
     void set_arg(cl_uint index, const int &value) {
-        cl_int err = kernel_.setArg(index, value);
-        if (err != CL_SUCCESS) {
-            throw std::runtime_error("Failed to set kernel argument: " +
-                                     std::to_string(err));
-        }
+        kernel_.setArg(index, value);
     }
 
     void set_arg(cl_uint index, const Buffer &buffer) {
-        cl_int err = kernel_.setArg(index, buffer.get());
-        if (err != CL_SUCCESS) {
-            throw std::runtime_error("Failed to set kernel argument: " +
-                                     std::to_string(err));
-        }
+        kernel_.setArg(index, buffer.get());
     }
 
     cl::Kernel &get() { return kernel_; }

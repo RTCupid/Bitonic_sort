@@ -27,15 +27,21 @@ static std::size_t next_power_of_two(std::size_t x) {
 
 class Bitonic {
   private:
-    std::vector<int> data_;
     const std::string kernel_source_;
+    std::vector<int> data_;
     Gpu_context gpu_context_;
+    bool valid_ = true;
 
   public:
     Bitonic(std::vector<int> &data, const std::string &kernel_path)
-        : data_{data}, kernel_source_{read_kernel(kernel_path)} {}
+        : kernel_source_{read_kernel(kernel_path)}, data_{data} {}
 
     void sort() {
+        if (data_.empty())
+            return;
+        if (!valid_)
+            throw std::runtime_error("Invalid state");
+
         auto padded = pad_data_to_power_of_two();
 
         auto n = padded.size();
@@ -44,13 +50,17 @@ class Bitonic {
 
         Kernel kernel(gpu_context_, kernel_source_, "bitonic_stage");
 
-        run_bitonic_sort(gpu_context_, kernel, buffer, n);
+        try {
+            run_bitonic_sort(gpu_context_, kernel, buffer, n);
+            gpu_context_.finish();
+            buffer.read(padded, true);
 
-        gpu_context_.finish();
-
-        buffer.read(padded, true);
-
-        data_.assign(padded.begin(), padded.begin() + data_.size());
+            data_.assign(padded.begin(), padded.begin() + data_.size());
+        } catch (const cl::Error &e) {
+            valid_ = false;
+            std::cerr << "OpenCL error: " << e.what() << '\n';
+            throw;
+        }
     }
 
     void dump() const {
@@ -71,12 +81,8 @@ class Bitonic {
                 kernel.set_arg(1, j);
                 kernel.set_arg(2, k);
 
-                cl_int err = gpu_context.get_queue().enqueueNDRangeKernel(
+                gpu_context.get_queue().enqueueNDRangeKernel(
                     kernel.get(), cl::NullRange, global, cl::NullRange);
-                if (err != CL_SUCCESS) {
-                    throw std::runtime_error("enqueueNDRangeKernel failed: " +
-                                             std::to_string(err));
-                }
             }
         }
     }
