@@ -13,20 +13,19 @@ if(NOT OpenCL_FOUND)
     add_definitions(-DNO_OPENCL)
 endif()
 
-add_executable(${PROJECT_NAME}
-    src/main.cpp
-)
+set(SORT_GPU_SOURCES src/main.cpp)
+set(SORT_GPU_INCLUDES ${OpenCL_INCLUDE_DIRS} include)
+set(SORT_GPU_LIBS ${OpenCL_LIBRARIES})
 
-target_compile_definitions(sort_gpu PRIVATE CL_HPP_ENABLE_EXCEPTIONS)
+add_executable(gpu ${SORT_GPU_SOURCES})
+target_compile_definitions(gpu PRIVATE CL_HPP_ENABLE_EXCEPTIONS)
+target_link_libraries(gpu PRIVATE ${SORT_GPU_LIBS})
+target_include_directories(gpu PRIVATE ${SORT_GPU_INCLUDES})
 
-target_link_libraries(${PROJECT_NAME}
-    ${OpenCL_LIBRARIES}
-)
-
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${OpenCL_INCLUDE_DIRS}
-    include
-)
+add_executable(gpu_time ${SORT_GPU_SOURCES})
+target_compile_definitions(gpu_time PRIVATE CL_HPP_ENABLE_EXCEPTIONS TIME_TEST)
+target_link_libraries(gpu_time PRIVATE ${SORT_GPU_LIBS})
+target_include_directories(gpu_time PRIVATE ${SORT_GPU_INCLUDES})
 
 enable_testing()
 add_subdirectory(tests)

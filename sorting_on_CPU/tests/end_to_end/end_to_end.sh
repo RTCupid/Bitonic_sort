@@ -5,7 +5,7 @@ SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 DATA_DIR="$SCRIPT_DIR/../../../tests/data"
 ANSW_DIR="$SCRIPT_DIR/../../../tests/answ"
 
-BIN="${1:-$SCRIPT_DIR/../../../build/sorting_on_CPU/sort_cpu}"
+BIN="${1:-$SCRIPT_DIR/../../../build/sorting_on_CPU/cpu}"
 
 
 if [[ ! -x "$BIN" ]]; then
