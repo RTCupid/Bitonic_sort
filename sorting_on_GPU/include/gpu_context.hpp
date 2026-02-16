@@ -38,19 +38,19 @@ class Gpu_context {
 
     ~Gpu_context() = default;
 
-    Gpu_context(const Gpu_context&) = delete;
-    Gpu_context& operator=(const Gpu_context&) = delete;
-    Gpu_context(Gpu_context&&) = default;
-    Gpu_context& operator=(Gpu_context&&) = default;
+    Gpu_context(const Gpu_context &) = delete;
+    Gpu_context &operator=(const Gpu_context &) = delete;
+    Gpu_context(Gpu_context &&) = default;
+    Gpu_context &operator=(Gpu_context &&) = default;
 
-    cl::CommandQueue& get_queue() { return queue_; }
-    const cl::CommandQueue& get_queue() const { return queue_; }
-    cl::Context& get_context() { return context_; }
-    const cl::Context& get_context() const { return context_; }
-    cl::Device& get_device() { return device_; }
-    const cl::Device& get_device() const { return device_; }
-    cl::Platform& get_platform() { return platform_; }
-    const cl::Platform& get_platform() const { return platform_; }
+    cl::CommandQueue &get_queue() { return queue_; }
+    const cl::CommandQueue &get_queue() const { return queue_; }
+    cl::Context &get_context() { return context_; }
+    const cl::Context &get_context() const { return context_; }
+    cl::Device &get_device() { return device_; }
+    const cl::Device &get_device() const { return device_; }
+    cl::Platform &get_platform() { return platform_; }
+    const cl::Platform &get_platform() const { return platform_; }
 
     void finish() { queue_.finish(); }
 };

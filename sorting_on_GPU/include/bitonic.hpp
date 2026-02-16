@@ -37,8 +37,10 @@ class Bitonic {
         : kernel_source_{read_kernel(kernel_path)}, data_{data} {}
 
     void sort() {
-        if (data_.empty()) return;
-        if (!valid_) throw std::runtime_error("Invalid state");
+        if (data_.empty())
+            return;
+        if (!valid_)
+            throw std::runtime_error("Invalid state");
 
         auto padded = pad_data_to_power_of_two();
 

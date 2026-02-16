@@ -17,10 +17,11 @@ class Kernel {
     cl::Kernel kernel_;
     cl::Program program_;
 
-public:
+  public:
     // @param context must live longer than Kernel
-    Kernel(Gpu_context& context, const std::string& kernel_source,
-           const std::string& kernel_name) : context_(context) {
+    Kernel(Gpu_context &context, const std::string &kernel_source,
+           const std::string &kernel_name)
+        : context_(context) {
         program_ = cl::Program(context_.get_context(), kernel_source);
         program_.build({context.get_device()});
         kernel_ = cl::Kernel(program_, kernel_name.c_str());
@@ -33,11 +34,11 @@ public:
     Kernel(Kernel &&) = default;
     Kernel &operator=(Kernel &&) = default;
 
-    void set_arg(cl_uint index, const int& value) {
+    void set_arg(cl_uint index, const int &value) {
         kernel_.setArg(index, value);
     }
 
-    void set_arg(cl_uint index, const Buffer& buffer) {
+    void set_arg(cl_uint index, const Buffer &buffer) {
         kernel_.setArg(index, buffer.get());
     }
 
