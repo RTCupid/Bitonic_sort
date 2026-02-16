@@ -5,8 +5,11 @@
 #include <vector>
 
 int main(int argc, char **argv) {
-    // using clock = std::chrono::steady_clock;
-    // using duration = std::chrono::duration<double, std::milli>;
+// #define TIME_TEST
+#ifdef TIME_TEST
+    using clock = std::chrono::steady_clock;
+    using duration = std::chrono::duration<double, std::milli>;
+#endif
 
     std::size_t count;
     std::cin >> count;
@@ -25,13 +28,21 @@ int main(int argc, char **argv) {
     // std::cout << "data before sorting:" << std::endl;
     // bitonic.dump();
 
-    // auto start = clock::now();
+#ifdef TIME_TEST
+    auto start = clock::now();
+#endif
     bitonic.sort();
-    // auto end = clock::now();
-    // duration dt = end - start;
 
-    // std::cout << "data after sorting:" << std::endl;
+#ifdef TIME_TEST
+    auto end = clock::now();
+    duration dt = end - start;
+#endif
+
+// std::cout << "data after sorting:" << std::endl;
+#ifndef TIME_TEST
     bitonic.dump();
-
-    // std::cout << "Total time: " << dt.count() << " ms" << std::endl;
+#endif
+#ifdef TIME_TEST
+    std::cout << "Total time: " << dt.count() << " ms" << std::endl;
+#endif
 }
