@@ -25,9 +25,6 @@ int main(int argc, char **argv) {
 
     bLab::Bitonic bitonic{data, kernel_path.string()};
 
-    // std::cout << "data before sorting:" << std::endl;
-    // bitonic.dump();
-
 #ifdef TIME_TEST
     auto start = clock::now();
 #endif
@@ -38,7 +35,6 @@ int main(int argc, char **argv) {
     duration dt = end - start;
 #endif
 
-// std::cout << "data after sorting:" << std::endl;
 #ifndef TIME_TEST
     bitonic.dump();
 #endif
