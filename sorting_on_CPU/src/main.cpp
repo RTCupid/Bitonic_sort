@@ -19,8 +19,6 @@ int main() {
     for (std::size_t i = 0; i < count && std::cin >> value; ++i)
         data.push_back(value);
 
-// std::cout << "data before sorting:" << std::endl;
-// bLab::dump(data);
 #ifdef TIME_TEST
     auto start = clock::now();
 #endif
@@ -31,7 +29,6 @@ int main() {
     duration dt = end - start;
 #endif
 
-// std::cout << "data after sorting:" << std::endl;
 #ifndef TIME_TEST
     bLab::dump(data);
 #endif
