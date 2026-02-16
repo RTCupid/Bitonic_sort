@@ -17,15 +17,14 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
 )
 
+target_compile_definitions(sort_gpu PRIVATE CL_HPP_ENABLE_EXCEPTIONS)
+
 target_link_libraries(${PROJECT_NAME}
     ${OpenCL_LIBRARIES}
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${OpenCL_INCLUDE_DIRS}
-)
-
-target_include_directories(${PROJECT_NAME} PRIVATE
     include
 )
 
