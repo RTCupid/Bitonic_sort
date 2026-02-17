@@ -3,8 +3,8 @@ import subprocess
 import re
 
 commands = [
-    "./build/sorting_on_CPU/sort_cpu < tests/data/1.txt",
-    "./build/sorting_on_GPU/sort_gpu < tests/data/1.txt",
+    "./build/sorting_on_CPU/cpu_time < tests/data/1.txt",
+    "./build/sorting_on_GPU/gpu_time < tests/data/1.txt",
 ]
 
 iterations = 20

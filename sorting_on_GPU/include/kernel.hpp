@@ -32,7 +32,7 @@ class Kernel {
     Kernel(const Kernel &) = delete;
     Kernel &operator=(const Kernel &) = delete;
     Kernel(Kernel &&) = default;
-    Kernel &operator=(Kernel &&) = default;
+    Kernel &operator=(Kernel &&) = delete;
 
     void set_arg(cl_uint index, const int &value) {
         kernel_.setArg(index, value);

@@ -52,13 +52,11 @@ class Bitonic {
 
         try {
             run_bitonic_sort(gpu_context_, kernel, buffer, n);
-            gpu_context_.finish();
             buffer.read(padded, true);
 
             data_.assign(padded.begin(), padded.begin() + data_.size());
         } catch (const cl::Error &e) {
             valid_ = false;
-            std::cerr << "OpenCL error: " << e.what() << '\n';
             throw;
         }
     }
@@ -73,7 +71,9 @@ class Bitonic {
   private:
     void run_bitonic_sort(Gpu_context &gpu_context, Kernel &kernel,
                           Buffer &buffer, const size_t &n) {
+        size_t local_size = 256;
         cl::NDRange global(n);
+        cl::NDRange local(local_size);
 
         for (cl_uint k = 2; k <= (cl_uint)n; k <<= 1) {
             for (cl_uint j = k >> 1; j > 0; j >>= 1) {
@@ -82,9 +82,11 @@ class Bitonic {
                 kernel.set_arg(2, k);
 
                 gpu_context.get_queue().enqueueNDRangeKernel(
-                    kernel.get(), cl::NullRange, global, cl::NullRange);
+                    kernel.get(), cl::NullRange, global, local);
             }
         }
+
+        gpu_context_.finish();
     }
 
     std::vector<int> pad_data_to_power_of_two() const {
