@@ -30,7 +30,7 @@ class Buffer {
     Buffer(const Buffer &) = delete;
     Buffer &operator=(const Buffer &) = delete;
     Buffer(Buffer &&) = default;
-    Buffer &operator=(Buffer &&) = default;
+    Buffer &operator=(Buffer &&) = delete;
 
     void read(std::vector<int> &data, bool blocking = true) {
         if (data.size() * sizeof(int) > size_) {
