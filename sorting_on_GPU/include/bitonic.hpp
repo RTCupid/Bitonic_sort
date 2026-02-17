@@ -58,7 +58,6 @@ class Bitonic {
             data_.assign(padded.begin(), padded.begin() + data_.size());
         } catch (const cl::Error &e) {
             valid_ = false;
-            std::cerr << "OpenCL error: " << e.what() << '\n';
             throw;
         }
     }

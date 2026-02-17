@@ -7,6 +7,7 @@
 #include "utils_gpu.hpp"
 #include <CL/cl.h>
 #include <CL/opencl.hpp>
+#include <iostream>
 
 namespace bLab {
 
@@ -21,11 +22,13 @@ class Gpu_context {
     Gpu_context() {
         auto [platform, type] = select_platform();
 
+        platform_ = platform;
+
         std::vector<cl::Device> devices;
         if (type == type_device::gpu)
-            platform.getDevices(CL_DEVICE_TYPE_GPU, &devices);
+            platform_.getDevices(CL_DEVICE_TYPE_GPU, &devices);
         else
-            platform.getDevices(CL_DEVICE_TYPE_CPU, &devices);
+            platform_.getDevices(CL_DEVICE_TYPE_CPU, &devices);
 
         if (devices.empty())
             throw std::runtime_error("No devices found");
