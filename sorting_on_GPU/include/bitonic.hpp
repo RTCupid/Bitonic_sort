@@ -117,7 +117,8 @@ class Bitonic {
                 kernel.set_arg(4, (cl_uint)0); // use_local_memory = false
                 kernel.set_arg(5, (cl_uint)local_size);
 
-                queue.enqueueNDRangeKernel(kernel.get(), cl::NullRange, global, local);
+                queue.enqueueNDRangeKernel(kernel.get(), cl::NullRange, global,
+                                           local);
             }
         }
 
