@@ -23,7 +23,18 @@ class Kernel {
            const std::string &kernel_name)
         : context_(context) {
         program_ = cl::Program(context_.get_context(), kernel_source);
-        program_.build({context.get_device()});
+        try {
+            program_.build({context.get_device()});
+        } catch (...) {
+            std::string log = program_.getBuildInfo<CL_PROGRAM_BUILD_LOG>(
+                context.get_device());
+            std::cerr << "=== OPENCL BUILD ERROR ===" << std::endl;
+            std::cerr << log << std::endl;
+            std::cerr << "==========================" << std::endl;
+            throw std::runtime_error("OpenCL build failed ("
+                                     ")");
+        }
+
         kernel_ = cl::Kernel(program_, kernel_name.c_str());
     }
 
