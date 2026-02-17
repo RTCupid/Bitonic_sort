@@ -5,7 +5,6 @@
 #include <vector>
 
 int main() {
-// #define TIME_TEST
 #ifdef TIME_TEST
     using clock = std::chrono::steady_clock;
     using duration = std::chrono::duration<double, std::milli>;
