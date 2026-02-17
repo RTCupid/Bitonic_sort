@@ -18,7 +18,7 @@
 - [Format Of Input Data](#format-of-input-data)
 - [Introduction](#introduction)
 - [Bitonic Sort Algorithm](#bitonic-sort-algorithm)
-- [Performance Benchmark Results](#performance-benchmark-results)
+- [First Version Of Parallel Bitonic Sort](#first-version-of-parallel-bitonic-sort)
 - [Project Structure](#project-structure)
 - [Project Authors](#project-authors)
 
