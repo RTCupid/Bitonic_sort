@@ -62,8 +62,13 @@ class Bitonic {
     }
 
     void dump() const {
+        bool first = true;
         for (const auto &value : data_) {
-            std::cout << value << " ";
+            if (!first) {
+                std::cout << " ";
+            }
+            std::cout << value;
+            first = false;
         }
         std::cout << std::endl;
     }
@@ -88,9 +93,10 @@ class Bitonic {
         for (cl_uint k = 2; k <= local_size; k <<= 1) {
             kernel.set_arg(0, buffer);
             kernel.set_arg(1, k);
-            kernel.set_arg(2, (cl_uint)n);
-            kernel.set_arg(3, (cl_uint)1); // use_local_memory = true
-            kernel.set_arg(4, (cl_uint)local_size);
+            kernel.set_arg(2, (cl_uint)0); // j = 0 (ignored in local mode)
+            kernel.set_arg(3, (cl_uint)n);
+            kernel.set_arg(4, (cl_uint)1); // use_local_memory = true
+            kernel.set_arg(5, (cl_uint)local_size);
 
             queue.enqueueNDRangeKernel(kernel.get(), cl::NullRange, global,
                                        local);
@@ -103,14 +109,16 @@ class Bitonic {
         // Run a kernel at each step j.
 
         for (cl_uint k = local_size * 2; k <= (cl_uint)n; k <<= 1) {
-            kernel.set_arg(0, buffer);
-            kernel.set_arg(1, k);
-            kernel.set_arg(2, (cl_uint)n);
-            kernel.set_arg(3, (cl_uint)0); // use_local_memory = false
-            kernel.set_arg(4, (cl_uint)local_size);
+            for (cl_uint j = k >> 1; j > 0; j >>= 1) {
+                kernel.set_arg(0, buffer);
+                kernel.set_arg(1, k);
+                kernel.set_arg(2, j);
+                kernel.set_arg(3, (cl_uint)n);
+                kernel.set_arg(4, (cl_uint)0); // use_local_memory = false
+                kernel.set_arg(5, (cl_uint)local_size);
 
-            queue.enqueueNDRangeKernel(kernel.get(), cl::NullRange, global,
-                                       local);
+                queue.enqueueNDRangeKernel(kernel.get(), cl::NullRange, global, local);
+            }
         }
 
         gpu_context_.finish();

@@ -20,7 +20,7 @@ inline void compare_and_swap_local(__local int* A, uint i, uint ixj, uint ascend
     }
 }
 
-__kernel void bitonic_sort(__global int* A, uint k, uint n,
+__kernel void bitonic_sort(__global int* A, uint k, uint j, uint n,
                             uint use_local_memory /*1 if k <= LOCAL_SIZE*/,
                             uint work_group_size) {
     uint gid = get_global_id(0);
@@ -57,13 +57,11 @@ __kernel void bitonic_sort(__global int* A, uint k, uint n,
     } else {
         if (gid >= n) return;
 
-        for (uint j = k >> 1; j > 0; j >>= 1) {
-            uint ixj = gid ^ j;
+        uint ixj = gid ^ j;
 
-            if (ixj > gid && ixj < n) {
-                uint ascending = ((gid & k) == 0);
-                compare_and_swap(A, gid, ixj, ascending);
-            }
+        if (ixj > gid && ixj < n) {
+            uint ascending = ((gid & k) == 0);
+            compare_and_swap(A, gid, ixj, ascending);
         }
     }
 }
