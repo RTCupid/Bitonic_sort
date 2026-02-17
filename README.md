@@ -13,12 +13,12 @@
 2. [English](/README.md)
 
 ## Table of Contents
-Introduction:
 - [Building The Program](#building-the-program)
 - [Program Execution Targets](#program-execution-targets)
 - [Format Of Input Data](#format-of-input-data)
 - [Introduction](#introduction)
 - [Bitonic Sort Algorithm](#bitonic-sort-algorithm)
+- [Performance Benchmark Results](#performance-benchmark-results)
 - [Project Structure](#project-structure)
 - [Project Authors](#project-authors)
 
@@ -74,6 +74,81 @@ Bitonic Sort is a parallel sorting algorithm designed to sort sequences by const
 4.  **Recursive Splitting:** The sequence is split into two halves, and the process repeats until each subsequence contains only one element. At this stage, the entire array is fully sorted.
 
 Because the comparison pattern is fixed and does not depend on the data values, the GPU can execute all operations simultaneously without waiting for previous results. This maximizes hardware utilization and ensures consistent performance.
+
+## First Version Of Parallel Bitonic Sort
+First implementation of bitonic sort: 
+
+<details>
+<summary>Main algorithm</summary>
+
+```C++
+void run_bitonic_sort(Gpu_context &gpu_context, Kernel &kernel,
+                          Buffer &buffer, const size_t &n) {
+        cl::NDRange global(n);
+
+        for (cl_uint k = 2; k <= (cl_uint)n; k <<= 1) {
+            for (cl_uint j = k >> 1; j > 0; j >>= 1) {
+                kernel.set_arg(0, buffer);
+                kernel.set_arg(1, j);
+                kernel.set_arg(2, k);
+
+                gpu_context.get_queue().enqueueNDRangeKernel(
+                    kernel.get(), cl::NullRange, global, cl::NullRange);
+            }
+        }
+    }
+```
+</details>
+
+<details>
+<summary>Kernel's implementation:</summary>
+
+```
+inline void compare_and_swap(__global int* A, uint i, uint ixj, uint ascending)
+{
+    int ai = A[i];
+    int aj = A[ixj];
+
+    int swap = ascending ? (ai > aj) : (ai < aj);
+    if (swap) {
+        A[i]   = aj;
+        A[ixj] = ai;
+    }
+}
+
+__kernel void bitonic_stage(__global int* A, uint j, uint k)
+{
+    uint i = (uint)get_global_id(0);
+    uint ixj = i ^ j;
+
+    if (ixj > i) {
+        uint ascending = ((i & k) == 0);
+        compare_and_swap(A, i, ixj, ascending);
+    }
+}
+```
+
+</details>
+
+### Performance Benchmark Results 
+The measurements were made on this platform:
+```
+Intel(R) OpenCL Graphics: FULL_PROFILE
+```
+
+The following table shows the average execution time for sorting different array sizes on CPU and GPU. Each measurement is based on 200 runs.
+
+| Array Size | CPU Time (ms) | GPU Time (ms) | Speedup (GPU vs CPU) |
+| :---: | :---: | :---: | :---: |
+| 10,000 | 1.88 | 3.41 | 0.55× |
+| 100,000 | 19.66 | 6.87 | 2.86× |
+| 1,000,000 | 233.62 | 28.03 | 8.33× |
+
+### Key Observations
+
+- **Small datasets (10,000 elements):** The CPU performs faster due to lower overhead. GPU initialization and data transfer costs outweigh the benefits of parallel computation.
+- **Medium datasets (100,000 elements):** The GPU starts to show its advantage, performing approximately **2.86× faster** than the CPU.
+- **Large datasets (1,000,000 elements):** The GPU demonstrates significant performance gains, achieving **8.33× speedup** over the CPU implementation.
 
 ## Project Structure
 
