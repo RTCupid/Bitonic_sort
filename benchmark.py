@@ -7,7 +7,7 @@ commands = [
     "./build/sorting_on_GPU/gpu_time < tests/data/1.txt",
 ]
 
-iterations = 20
+iterations = 200
 
 def get_time_from_command(command):
     result = subprocess.run(command, shell=True, capture_output=True, text=True)

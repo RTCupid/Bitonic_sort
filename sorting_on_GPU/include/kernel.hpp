@@ -53,6 +53,10 @@ class Kernel {
         kernel_.setArg(index, buffer.get());
     }
 
+    void set_arg_local_size(cl_uint index, const int &size_byte) {
+        kernel_.setArg(index, size_byte, nullptr);
+    }
+
     cl::Kernel &get() { return kernel_; }
     const cl::Kernel &get() const { return kernel_; }
 };
