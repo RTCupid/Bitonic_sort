@@ -49,7 +49,8 @@ class Bitonic {
         Buffer buffer(gpu_context_, padded);
 
         Kernel kernel_local(gpu_context_, kernel_source_, "bitonic_sort_local");
-        Kernel kernel_global(gpu_context_, kernel_source_, "bitonic_sort_global");
+        Kernel kernel_global(gpu_context_, kernel_source_,
+                             "bitonic_sort_global");
 
         try {
             run_bitonic_sort(kernel_local, kernel_global, buffer, n);
@@ -75,7 +76,7 @@ class Bitonic {
     }
 
   private:
-    void run_bitonic_sort(Kernel& kernel_local, Kernel& kernel_global,
+    void run_bitonic_sort(Kernel &kernel_local, Kernel &kernel_global,
                           Buffer &buffer, const size_t &n) {
         const size_t local_size = 256;
 
@@ -94,11 +95,11 @@ class Bitonic {
             size_t local_mem_size = local_size * sizeof(int);
 
             kernel_local.set_arg(0, buffer);
-            kernel_local.set_arg_local_size(1, local_mem_size);  // __local size
+            kernel_local.set_arg_local_size(1, local_mem_size); // __local size
             kernel_local.set_arg(2, (cl_uint)n);
 
-            queue.enqueueNDRangeKernel(kernel_local.get(), cl::NullRange, global,
-                                        local);
+            queue.enqueueNDRangeKernel(kernel_local.get(), cl::NullRange,
+                                       global, local);
         }
 
         // ===============================================
@@ -112,7 +113,8 @@ class Bitonic {
                 kernel_global.set_arg(2, j);
                 kernel_global.set_arg(3, (cl_uint)n);
 
-                queue.enqueueNDRangeKernel(kernel_global.get(), cl::NullRange, global, local);
+                queue.enqueueNDRangeKernel(kernel_global.get(), cl::NullRange,
+                                           global, local);
             }
         }
 
