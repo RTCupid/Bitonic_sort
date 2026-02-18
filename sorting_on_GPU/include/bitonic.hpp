@@ -48,10 +48,11 @@ class Bitonic {
 
         Buffer buffer(gpu_context_, padded);
 
-        Kernel kernel(gpu_context_, kernel_source_, "bitonic_sort");
+        Kernel kernel_local(gpu_context_, kernel_source_, "bitonic_sort_local");
+        Kernel kernel_global(gpu_context_, kernel_source_, "bitonic_sort_global");
 
         try {
-            run_bitonic_sort(kernel, buffer, n);
+            run_bitonic_sort(kernel_local, kernel_global, buffer, n);
             buffer.read(padded, true);
 
             data_.assign(padded.begin(), padded.begin() + data_.size());
@@ -74,8 +75,9 @@ class Bitonic {
     }
 
   private:
-    void run_bitonic_sort(Kernel &kernel, Buffer &buffer, const size_t &n) {
-        const size_t local_size = 256; // Must match __local shared[256]
+    void run_bitonic_sort(Kernel& kernel_local, Kernel& kernel_global,
+                          Buffer &buffer, const size_t &n) {
+        const size_t local_size = 256;
 
         size_t num_blocks = (n + local_size - 1) / local_size;
 
@@ -87,38 +89,30 @@ class Bitonic {
         // ==============================================
         // PHASE 1: Sorting within blocks (Local Memory)
         // ================================================
-        // We run the kernel for k = 2, 4, 8, ..., LOCAL_SIZE.
-        // The kernel will loop over j.
 
-        for (cl_uint k = 2; k <= local_size; k <<= 1) {
-            kernel.set_arg(0, buffer);
-            kernel.set_arg(1, k);
-            kernel.set_arg(2, (cl_uint)0); // j = 0 (ignored in local mode)
-            kernel.set_arg(3, (cl_uint)n);
-            kernel.set_arg(4, (cl_uint)1); // use_local_memory = true
-            kernel.set_arg(5, (cl_uint)local_size);
+        {
+            size_t local_mem_size = local_size * sizeof(int);
 
-            queue.enqueueNDRangeKernel(kernel.get(), cl::NullRange, global,
-                                       local);
+            kernel_local.set_arg(0, buffer);
+            kernel_local.set_arg_local_size(1, local_mem_size);  // __local size
+            kernel_local.set_arg(2, (cl_uint)n);
+
+            queue.enqueueNDRangeKernel(kernel_local.get(), cl::NullRange, global,
+                                        local);
         }
 
         // ===============================================
         // PHASE 2: Block Merging (Global Memory)
         // ================================================
-        // For k > LOCAL_SIZE, we cannot use a local barrier between groups.
-        // Run a kernel at each step j.
 
         for (cl_uint k = local_size * 2; k <= (cl_uint)n; k <<= 1) {
             for (cl_uint j = k >> 1; j > 0; j >>= 1) {
-                kernel.set_arg(0, buffer);
-                kernel.set_arg(1, k);
-                kernel.set_arg(2, j);
-                kernel.set_arg(3, (cl_uint)n);
-                kernel.set_arg(4, (cl_uint)0); // use_local_memory = false
-                kernel.set_arg(5, (cl_uint)local_size);
+                kernel_global.set_arg(0, buffer);
+                kernel_global.set_arg(1, k);
+                kernel_global.set_arg(2, j);
+                kernel_global.set_arg(3, (cl_uint)n);
 
-                queue.enqueueNDRangeKernel(kernel.get(), cl::NullRange, global,
-                                           local);
+                queue.enqueueNDRangeKernel(kernel_global.get(), cl::NullRange, global, local);
             }
         }
 
