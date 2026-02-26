@@ -33,10 +33,12 @@ class Bitonic {
     bool valid_ = true;
 
   public:
+    #ifdef TIME_TEST
     double total_time{0};
-    double last_kernel_ms_{0};
-    double last_h2d_ms_{0};
-    double last_d2h_ms_{0};
+    double last_kernel_ms_ {0};
+    double last_h2d_ms_    {0};
+    double last_d2h_ms_    {0};
+    #endif
 
     Bitonic(std::vector<int> &data, const std::string &kernel_path)
         : kernel_source_{read_kernel(kernel_path)}, data_{data} {}
@@ -52,7 +54,8 @@ class Bitonic {
         auto n = padded.size();
 
         Buffer buffer(gpu_context_, padded);
-        gpu_context_.finish();
+        #ifdef TIME_TEST
+        gpu_context_.finish(); 
         last_h2d_ms_ = event_ms(buffer.get_last_write_event());
 
 
@@ -64,9 +67,11 @@ class Bitonic {
             run_bitonic_sort(kernel_local, kernel_global, buffer, n);
             buffer.read(padded, true);
 
+            #ifdef TIME_TEST
             gpu_context_.finish();
             last_d2h_ms_ = event_ms(buffer.get_last_read_event());
             total_time = last_h2d_ms_ + last_kernel_ms_ + last_d2h_ms_;
+            #endif
 
             data_.assign(padded.begin(), padded.begin() + data_.size());
         } catch (const cl::Error &e) {
@@ -87,10 +92,12 @@ class Bitonic {
         std::cout << std::endl;
     }
 
+    #ifdef TIME_TEST
     double cl_time_ms() const noexcept { return total_time; }
     double cl_h2d_ms() const noexcept { return last_h2d_ms_; }
     double cl_kernel_ms() const noexcept { return last_kernel_ms_; }
     double cl_d2h_ms() const noexcept { return last_d2h_ms_; }
+    #endif
 
   private:
     void run_bitonic_sort(Kernel &kernel_local, Kernel &kernel_global,
@@ -135,10 +142,11 @@ class Bitonic {
                                            global, local);
             }
         }
+        #ifdef TIME_TEST
         gpu_context_.finish();
         last_kernel_ms_ = 0.0;
-        for (const auto &ev : events)
-            last_kernel_ms_ += event_ms(ev);
+        for (const auto &ev : events) last_kernel_ms_ += event_ms(ev);
+        #endif
     }
 
     std::vector<int> pad_data_to_power_of_two() const {
