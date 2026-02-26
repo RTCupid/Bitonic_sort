@@ -124,7 +124,7 @@ class Bitonic {
             kernel_local.set_arg(2, (cl_uint)n);
 
             ON_TIME_TEST(cl::Event event;)
-            queue.enqueueNDRangeKernel(kernel.get(), cl::NullRange, global,
+            queue.enqueueNDRangeKernel(kernel_local.get(), cl::NullRange, global,
                                        local ON_TIME_TEST(, nullptr, &event));
             ON_TIME_TEST(events.push_back(event);)
         }
@@ -142,7 +142,7 @@ class Bitonic {
 
                 ON_TIME_TEST(cl::Event event;)
                 queue.enqueueNDRangeKernel(
-                    kernel.get(), cl::NullRange, global,
+                    kernel_global.get(), cl::NullRange, global,
                     local ON_TIME_TEST(, nullptr, &event));
                 ON_TIME_TEST(events.push_back(event);)
             }
