@@ -27,5 +27,10 @@ target_compile_definitions(gpu_time PRIVATE CL_HPP_ENABLE_EXCEPTIONS TIME_TEST)
 target_link_libraries(gpu_time PRIVATE ${SORT_GPU_LIBS})
 target_include_directories(gpu_time PRIVATE ${SORT_GPU_INCLUDES})
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(gpu PRIVATE -mllvm -inline-threshold=500)
+    target_compile_options(gpu_time PRIVATE -mllvm -inline-threshold=500)
+endif()
+
 enable_testing()
 add_subdirectory(tests)

@@ -17,5 +17,10 @@ add_executable(cpu_time ${SORT_CPU_SOURCES})
 target_include_directories(cpu_time PRIVATE ${SORT_CPU_INCLUDES})
 target_compile_definitions(cpu_time PRIVATE TIME_TEST)
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(cpu PRIVATE -mllvm -inline-threshold=500)
+    target_compile_options(cpu_time PRIVATE -mllvm -inline-threshold=500)
+endif()
+
 enable_testing()
 add_subdirectory(tests)

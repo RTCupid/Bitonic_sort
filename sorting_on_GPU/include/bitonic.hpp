@@ -59,10 +59,12 @@ class Bitonic {
         last_h2d_ms_ = event_ms(buffer.get_last_write_event());
 #endif
 
-        Kernel kernel(gpu_context_, kernel_source_, "bitonic_sort");
+        Kernel kernel_local(gpu_context_, kernel_source_, "bitonic_sort_local");
+        Kernel kernel_global(gpu_context_, kernel_source_,
+                             "bitonic_sort_global");
 
         try {
-            run_bitonic_sort(kernel, buffer, n);
+            run_bitonic_sort(kernel_local, kernel_global, buffer, n);
             buffer.read(padded, true);
 
 #ifdef TIME_TEST
@@ -98,8 +100,9 @@ class Bitonic {
 #endif
 
   private:
-    void run_bitonic_sort(Kernel &kernel, Buffer &buffer, const size_t &n) {
-        const size_t local_size = 256; // Must match __local shared[256]
+    void run_bitonic_sort(Kernel &kernel_local, Kernel &kernel_global,
+                          Buffer &buffer, const size_t &n) {
+        const size_t local_size = 256;
 
         size_t num_blocks = (n + local_size - 1) / local_size;
 
@@ -132,8 +135,6 @@ class Bitonic {
         // ===============================================
         // PHASE 2: Block Merging (Global Memory)
         // ================================================
-        // For k > LOCAL_SIZE, we cannot use a local barrier between groups.
-        // Run a kernel at each step j.
 
         for (cl_uint k = local_size * 2; k <= (cl_uint)n; k <<= 1) {
             for (cl_uint j = k >> 1; j > 0; j >>= 1) {
