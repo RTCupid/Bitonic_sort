@@ -33,12 +33,12 @@ class Bitonic {
     bool valid_ = true;
 
   public:
-    #ifdef TIME_TEST
+#ifdef TIME_TEST
     double total_time{0};
-    double last_kernel_ms_ {0};
-    double last_h2d_ms_    {0};
-    double last_d2h_ms_    {0};
-    #endif
+    double last_kernel_ms_{0};
+    double last_h2d_ms_{0};
+    double last_d2h_ms_{0};
+#endif
 
     Bitonic(std::vector<int> &data, const std::string &kernel_path)
         : kernel_source_{read_kernel(kernel_path)}, data_{data} {}
@@ -54,10 +54,10 @@ class Bitonic {
         auto n = padded.size();
 
         Buffer buffer(gpu_context_, padded);
-        #ifdef TIME_TEST
-        gpu_context_.finish(); 
+#ifdef TIME_TEST
+        gpu_context_.finish();
         last_h2d_ms_ = event_ms(buffer.get_last_write_event());
-
+#endif
 
         Kernel kernel_local(gpu_context_, kernel_source_, "bitonic_sort_local");
         Kernel kernel_global(gpu_context_, kernel_source_,
@@ -67,11 +67,11 @@ class Bitonic {
             run_bitonic_sort(kernel_local, kernel_global, buffer, n);
             buffer.read(padded, true);
 
-            #ifdef TIME_TEST
+#ifdef TIME_TEST
             gpu_context_.finish();
             last_d2h_ms_ = event_ms(buffer.get_last_read_event());
             total_time = last_h2d_ms_ + last_kernel_ms_ + last_d2h_ms_;
-            #endif
+#endif
 
             data_.assign(padded.begin(), padded.begin() + data_.size());
         } catch (const cl::Error &e) {
@@ -92,12 +92,12 @@ class Bitonic {
         std::cout << std::endl;
     }
 
-    #ifdef TIME_TEST
+#ifdef TIME_TEST
     double cl_time_ms() const noexcept { return total_time; }
     double cl_h2d_ms() const noexcept { return last_h2d_ms_; }
     double cl_kernel_ms() const noexcept { return last_kernel_ms_; }
     double cl_d2h_ms() const noexcept { return last_d2h_ms_; }
-    #endif
+#endif
 
   private:
     void run_bitonic_sort(Kernel &kernel_local, Kernel &kernel_global,
@@ -123,8 +123,10 @@ class Bitonic {
             kernel_local.set_arg_local_size(1, local_mem_size); // __local size
             kernel_local.set_arg(2, (cl_uint)n);
 
-            queue.enqueueNDRangeKernel(kernel_local.get(), cl::NullRange,
-                                       global, local);
+            ON_TIME_TEST(cl::Event event;)
+            queue.enqueueNDRangeKernel(kernel.get(), cl::NullRange, global,
+                                       local ON_TIME_TEST(, nullptr, &event));
+            ON_TIME_TEST(events.push_back(event);)
         }
 
         // ===============================================
@@ -138,15 +140,19 @@ class Bitonic {
                 kernel_global.set_arg(2, j);
                 kernel_global.set_arg(3, (cl_uint)n);
 
-                queue.enqueueNDRangeKernel(kernel_global.get(), cl::NullRange,
-                                           global, local);
+                ON_TIME_TEST(cl::Event event;)
+                queue.enqueueNDRangeKernel(
+                    kernel.get(), cl::NullRange, global,
+                    local ON_TIME_TEST(, nullptr, &event));
+                ON_TIME_TEST(events.push_back(event);)
             }
         }
-        #ifdef TIME_TEST
+#ifdef TIME_TEST
         gpu_context_.finish();
         last_kernel_ms_ = 0.0;
-        for (const auto &ev : events) last_kernel_ms_ += event_ms(ev);
-        #endif
+        for (const auto &ev : events)
+            last_kernel_ms_ += event_ms(ev);
+#endif
     }
 
     std::vector<int> pad_data_to_power_of_two() const {
