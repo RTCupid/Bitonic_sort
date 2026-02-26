@@ -26,7 +26,8 @@ class Buffer {
         : context_(context), size_(data.size() * sizeof(int)) {
         buffer_ = cl::Buffer(context.get_context(), flags, size_);
         context_.get_queue().enqueueWriteBuffer(buffer_, CL_TRUE, 0, size_,
-                                                data.data(), nullptr, &last_write_event_);
+                                                data.data(), nullptr,
+                                                &last_write_event_);
     }
 
     ~Buffer() = default;
@@ -48,13 +49,13 @@ class Buffer {
     const cl::Buffer &get() const { return buffer_; }
     size_t size() const { return size_; }
 
-    const cl::Event &
-    get_last_write_event() const noexcept { return last_write_event_; }
+    const cl::Event &get_last_write_event() const noexcept {
+        return last_write_event_;
+    }
 
-    const cl::Event &
-    get_last_read_event()  const noexcept { return last_read_event_; }
-
-    
+    const cl::Event &get_last_read_event() const noexcept {
+        return last_read_event_;
+    }
 };
 
 } // namespace bLab

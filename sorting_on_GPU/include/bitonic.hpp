@@ -34,9 +34,9 @@ class Bitonic {
 
   public:
     double total_time{0};
-    double last_kernel_ms_ {0};
-    double last_h2d_ms_    {0};
-    double last_d2h_ms_    {0};
+    double last_kernel_ms_{0};
+    double last_h2d_ms_{0};
+    double last_d2h_ms_{0};
 
     Bitonic(std::vector<int> &data, const std::string &kernel_path)
         : kernel_source_{read_kernel(kernel_path)}, data_{data} {}
@@ -52,9 +52,8 @@ class Bitonic {
         auto n = padded.size();
 
         Buffer buffer(gpu_context_, padded);
-        gpu_context_.finish(); 
+        gpu_context_.finish();
         last_h2d_ms_ = event_ms(buffer.get_last_write_event());
-
 
         Kernel kernel(gpu_context_, kernel_source_, "bitonic_sort");
 
@@ -117,9 +116,8 @@ class Bitonic {
             kernel.set_arg(5, (cl_uint)local_size);
 
             cl::Event event;
-            queue.enqueueNDRangeKernel(
-                            kernel.get(), cl::NullRange, 
-                            global, local, nullptr, &event);                
+            queue.enqueueNDRangeKernel(kernel.get(), cl::NullRange, global,
+                                       local, nullptr, &event);
             events.push_back(event);
         }
 
@@ -139,15 +137,15 @@ class Bitonic {
                 kernel.set_arg(5, (cl_uint)local_size);
 
                 cl::Event event;
-                queue.enqueueNDRangeKernel(
-                                kernel.get(), cl::NullRange, 
-                                global, local, nullptr, &event);
+                queue.enqueueNDRangeKernel(kernel.get(), cl::NullRange, global,
+                                           local, nullptr, &event);
                 events.push_back(event);
             }
         }
         gpu_context_.finish();
         last_kernel_ms_ = 0.0;
-        for (const auto &ev : events) last_kernel_ms_ += event_ms(ev);
+        for (const auto &ev : events)
+            last_kernel_ms_ += event_ms(ev);
     }
 
     std::vector<int> pad_data_to_power_of_two() const {
@@ -164,4 +162,3 @@ class Bitonic {
 } // namespace bLab
 
 #endif // SORTING_ON_GPU_INCLUDE_BITONIC_HPP
-
