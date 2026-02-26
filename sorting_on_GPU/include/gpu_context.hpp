@@ -36,7 +36,7 @@ class Gpu_context {
         device_ = devices[0];
 
         context_ = cl::Context(device_);
-        queue_ = cl::CommandQueue(context_, device_);
+        queue_ = cl::CommandQueue(context_, device_, CL_QUEUE_PROFILING_ENABLE);
     }
 
     ~Gpu_context() = default;
