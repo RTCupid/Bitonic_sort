@@ -13,6 +13,12 @@
 
 namespace bLab {
 
+#ifdef TIME_TEST
+    #define ON_TIME_TEST(...) __VA_ARGS__
+#else 
+    #define ON_TIME_TEST(...)
+#endif
+
 enum class type_device {
     gpu,
     cpu,
