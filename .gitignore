@@ -1,9 +1,13 @@
 build/
 
+tests/data/
+tests/answ/
 tests/data/*
 tests/answ/*
 
 .cache/
+
+input.txt
 
 # Prerequisites
 *.d
