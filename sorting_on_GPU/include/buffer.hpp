@@ -16,6 +16,9 @@ class Buffer {
     Gpu_context &context_;
     size_t size_;
 
+    cl::Event last_write_event_{};
+    cl::Event last_read_event_{};
+
   public:
     // @param context must live longer than Buffer
     Buffer(Gpu_context &context, const std::vector<int> &data,
@@ -23,7 +26,7 @@ class Buffer {
         : context_(context), size_(data.size() * sizeof(int)) {
         buffer_ = cl::Buffer(context.get_context(), flags, size_);
         context_.get_queue().enqueueWriteBuffer(buffer_, CL_TRUE, 0, size_,
-                                                data.data());
+                                                data.data(), nullptr, &last_write_event_);
     }
 
     ~Buffer() = default;
@@ -38,12 +41,20 @@ class Buffer {
         }
         context_.get_queue().enqueueReadBuffer(
             buffer_, blocking ? CL_TRUE : CL_FALSE, 0,
-            data.size() * sizeof(int), data.data());
+            data.size() * sizeof(int), data.data(), nullptr, &last_read_event_);
     }
 
     cl::Buffer &get() { return buffer_; }
     const cl::Buffer &get() const { return buffer_; }
     size_t size() const { return size_; }
+
+    const cl::Event &
+    get_last_write_event() const noexcept { return last_write_event_; }
+
+    const cl::Event &
+    get_last_read_event()  const noexcept { return last_read_event_; }
+
+    
 };
 
 } // namespace bLab

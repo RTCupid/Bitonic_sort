@@ -77,6 +77,12 @@ inline std::filesystem::path executable_dir(const char *argv0) {
     return exe.parent_path();
 }
 
+inline double event_ms(const cl::Event& ev) {
+    cl_ulong start = ev.getProfilingInfo<CL_PROFILING_COMMAND_START>();
+    cl_ulong end   = ev.getProfilingInfo<CL_PROFILING_COMMAND_END>();
+    return (end - start) * 1e-6; // ns to ms
+}
+
 } // namespace bLab
 
 #endif // INCLUDE_UTILS_HPP

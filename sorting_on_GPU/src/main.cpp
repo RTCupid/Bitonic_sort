@@ -40,6 +40,9 @@ int main(int argc, char **argv) {
 #endif
         bitonic.sort();
 
+        double time = bitonic.cl_time_ms();
+        std::cout << "Total time (events) = " << time << " ms\n";
+
 #ifdef TIME_TEST
         auto end = clock::now();
         duration dt = end - start;
